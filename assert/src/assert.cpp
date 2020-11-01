@@ -14,27 +14,18 @@
  *  limitations under the License.
  *
  *****************************************************************************
- * main.cpp
  *
- *  Created on: 4 Jun 2020
+ * assert.cpp
+ *
+ *  Created on: 31 Oct 2020
  *      Author: jeppa
  */
 
-#include "main.hpp"
-#include <cstdint>
+#include "assert.hpp"
 
-void Main::main()
+void Assert::assert()
 {
-	static uint16_t a = 15;
-	static uint16_t b = 40;
 
-	uint16_t c = a + b;
 }
 
-/* Entry point from crt0.s */
 
-int main()
-{
-	Main::main();
-	return 0;
-}

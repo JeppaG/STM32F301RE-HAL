@@ -39,6 +39,8 @@ extern uintptr_t __bss_start__;
 extern uintptr_t __bss_end__;
 extern uintptr_t __ctors_start__;
 extern uintptr_t __ctors_end__;
+extern uintptr_t _HEAP_START;
+extern uintptr_t _HEAP_END;
 
 
 void Startup::lowLevelInit()
@@ -60,9 +62,9 @@ void Startup::lowLevelInit()
 
 	/* Call C++ constructors for static objects
 	 */
-	Startup::ctorType* firstCtor = reinterpret_cast<Startup::ctorType*>( __ctors_start__ );
-	Startup::ctorType* lastCtor = reinterpret_cast<Startup::ctorType*>( __ctors_end__ );
-	for ( Startup::ctorType* p = firstCtor; p < lastCtor; ++p)
+	Startup::ctorType* firstCtor = reinterpret_cast<Startup::ctorType*>( &__ctors_start__ );
+	Startup::ctorType* lastCtor = reinterpret_cast<Startup::ctorType*>( &__ctors_end__ );
+	for ( Startup::ctorType* p = firstCtor; p < lastCtor; ++p )
 	{
 		(*p)();
 	}

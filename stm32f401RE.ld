@@ -6,7 +6,7 @@
 MEMORY
 {
 	flash	(rx):	ORIGIN = 0x08000000, LENGTH = 512K
-	ram		(rwx):	ORIGIN = 0x20000000, LENGTH = 96K
+	ram		(rwx):	ORIGIN = 0x20000000, LENGTH = 64K
 }
 
 __rom_start__	= ORIGIN(flash);
@@ -20,6 +20,8 @@ __stack_start__ = __stack_end__ - __stack_size__;
 __heap_start__	= __bss_end__; /* Between bss and stack */
 __heap_end__	= __stack_start__;
 end				= __heap_start__;
+_HEAP_START = __heap_start__;
+_HEAP_END = __heap_end__;
 
 SECTIONS
 {

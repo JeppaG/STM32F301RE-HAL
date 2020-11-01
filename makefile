@@ -14,51 +14,35 @@
 #  limitations under the License.
 #
 #****************************************************************************
- 
+
+TOOL_PATH = ../../opt/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/9.2.1-1.1.1/.content/bin
+PROJ_ROOT = .
 BUILD_PATH = build
-OBJ_PATH = $(BUILD_PATH)/obj
-#APP_SOURCE_PATH = application/src/
-DRV_SOURCE_PATH = src/
-#DRV_ASM_PATH = driver/asm/
+OBJ_PATH = obj
 
-G++ = arm-none-eabi-g++
-LD = arm-none-eabi-g++
+G++ = $(TOOL_PATH)/arm-none-eabi-g++
+LD = $(TOOL_PATH)/arm-none-eabi-g++
 
-#G++_FLAGS = -O0 -c -g -mcpu=cortex-m4 -mthumb -std=c++11
-G++_FLAGS = -O0 -c -g -march=armv7e-m -mcpu=cortex-m4 -mthumb -xc++ -std=gnu++14 -MMD -MP -mfloat-abi=hard -mfpu=fpv4-sp-d16
-#LD_FLAGS = -Tstm32f401RE.ld -mcpu=cortex-m4 -mthumb -fno-exceptions --specs=nosys.specs \
-           -nostartfiles -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 \
-           -fsigned-char -ffunction-sections -fdata-sections -ffreestanding \
-           -fno-move-loop-invariants -Xlinker
+G++_FLAGS = -O0 -c -g -march=armv7e-m -mcpu=cortex-m4 -mthumb -xc++ -std=gnu++14 -MMD -MP \
+            -mfloat-abi=hard -mfpu=fpv4-sp-d16
+
 LD_FLAGS = -Tstm32f401RE.ld -march=armv7e-m -mcpu=cortex-m4 -mthumb -fno-exceptions --specs=nosys.specs \
-           -nostartfiles -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 \
-           -fsigned-char -ffunction-sections -fdata-sections -ffreestanding \
+           -nostartfiles -fno-unwind-tables -fno-rtti -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 \
+           -fsigned-char -ffunction-sections -fdata-sections -ffreestanding --specs=nano.specs \
            -fno-move-loop-invariants -Xlinker
+#-fno-use-cxa-atexit 
         
-# Source file list
-
-APP_SOURCE = \
-  
-DRIVER_SOURCE = \
-  exception.cpp \
-  main.cpp \
-  startup.cpp \
-    
-INCLUDE_PATH = \
-  -I inc \
-  
 $(shell mkdir -p $(BUILD_PATH))
 $(shell mkdir -p $(OBJ_PATH))
   
-OBJ = $(APP_SOURCE:.cpp=.o) \
-      $(DRIVER_SOURCE:.cpp=.o)
+OBJ :=
 
-$(OBJ_PATH)/%.o : $(APP_SOURCE_PATH)%.cpp
-	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@ 
-      
-$(OBJ_PATH)/%.o : $(DRV_SOURCE_PATH)%.cpp
-	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@
-	
+include main/make.mk
+include clockGenerator/make.mk
+include gpio/make.mk
+include timer/make.mk
+include assert/make.mk
+
 $(BUILD_PATH)/main.elf : $(addprefix $(OBJ_PATH)/, $(OBJ))
 	$(LD) $(LD_FLAGS) $^ -o$@
 		 
@@ -69,6 +53,6 @@ clean :
     
 .PHONY : debug
 
-debug : ; $(info $$(addprefix $(OBJ_PATH), $(OBJ)) is [$(addprefix $(OBJ_PATH), $(OBJ))])
-	
+debug : ; $(info OBJ is [$(OBJ)])
+
 all : $(BUILD_PATH)/main.elf
