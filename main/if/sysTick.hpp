@@ -15,35 +15,27 @@
  *
  *****************************************************************************
  *
- * gpio.hpp
+ * exception.hpp
  *
- * Application interface of gpio.
+ * Application interface of exceptions.
  *
  *  Created on: 28 Sep 2020
  *      Author: jeppa
  */
 
-#ifndef GPIO_IF_GPIO_HPP_
-#define GPIO_IF_GPIO_HPP_
+#ifndef MAIN_IF_SYS_TICK_HPP_
+#define MAIN_IF_SYS_TICK_HPP_
 
-class Gpio
+#include <cstdint>
+
+
+class SysTick
 {
 public:
-	static constexpr uint32_t pin5 = 0x00000020;
-	static constexpr uint32_t activeHigh = 0x00000001;
-	virtual ~Gpio() = 0;
+    // the exception-handler needs to be public in order to be accessed from the exception vector
+    static void handler();
+
+private:
 };
 
-class DigitalOutput
-{
-public:
-	static constexpr uint32_t pushPull = 0x00000001;
-	static constexpr uint32_t lowSpeed = 0x00000001;
-
-	virtual void set() =0;
-	virtual void clear() =0;
-
-	virtual ~DigitalOutput() =0;
-};
-
-#endif /* GPIO_IF_GPIO_HPP_ */
+#endif /* MAIN_IF_SYS_TICK_HPP_ */

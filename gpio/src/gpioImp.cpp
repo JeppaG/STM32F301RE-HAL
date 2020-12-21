@@ -15,7 +15,7 @@
  *
  *****************************************************************************
  *
- * sysTickTimerImp.cpp
+ * gpioImp.cpp
  *
  *  Created on: 8 Sep 2020
  *      Author: jeppa

@@ -25,10 +25,12 @@
  * Symbols defined in the linker script
  */
 
+#include "../../startup/if/startup.hpp"
+
 #include <cstdint>
 #include <cstring>
-#include "main.hpp"
-#include "startup.hpp"
+
+#include "../if/main.hpp"
 
 /* Imported symbols from the linker script */
 

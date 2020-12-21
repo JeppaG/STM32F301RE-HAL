@@ -21,11 +21,15 @@
  */
 
 #include "main.hpp"
+#include "sysTick.hpp"
+
 #include <cstdint>
 #include "clockGeneratorImp.hpp"
 #include "sysTickTimerImp.hpp"
 #include "gpioImp.hpp"
+#include "exceptionImp.hpp"
 
+void* const scbBaseAddress = reinterpret_cast<void*>( 0xE000ED00 );
 void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
 void* const sysTickTimerBaseAddress = reinterpret_cast<void*>( 0xE000E010 );
 void* const gpioABaseAddress = reinterpret_cast<void*>( 0x40020000 );
@@ -37,6 +41,10 @@ SysTickTimerImp sysTickTimerImp( /* sysTickTimerBaseAddress */ sysTickTimerBaseA
 					             /* ahbClockRateInHz        */ 16000000,
 					             /* clockSelect             */ SysTickTimerImp::AHB_CLK_DIV_8 );
 Timer* sysTickTimer = dynamic_cast<Timer*>( &sysTickTimerImp );
+
+SysTickHandlerImp sysTickHandlerImp( /* scbBaseAddress */          scbBaseAddress,
+                                     /* sysTickTimerBaseAddress */ sysTickTimerBaseAddress );
+Exception* sysTickException = static_cast<Exception*>( &sysTickHandlerImp );
 
 PeripheralRccImp gpioARccImp( /* rccBaseAddress */ rccBaseAddress,
 		                      /* peripheralRcc  */ PeripheralRccImp::GPIOA );
@@ -56,26 +64,42 @@ void Main::main()
 	static uint16_t b = 40;
 
 	uint16_t c = a + b;
+
+	sysTickException->setPriority( 255U );
+	sysTickException->enable();
+	Exception::enableGlobal();
 	while ( true )
 	{
-		greenLed->set();
-		for ( int i = 0; i < 64000; i++ )
-		{
-		}
-		greenLed->clear();
-		for ( int i = 0; i < 64000; i++ )
-		{
-		}
+//		greenLed->set();
+//		for ( int i = 0; i < 64000; i++ )
+//		{
+//		}
+//		greenLed->clear();
+//		for ( int i = 0; i < 64000; i++ )
+//		{
+//		}
 	}
 }
 
-///* Entry point from crt0.s */
-//
-//int main()
-//{
-//	Main::main();
-//	return 0;
-//}
+void SysTick::handler()
+{
+    static uint16_t count = 1000;
+    static bool ledIsOn = false;
 
+    if ( 0 == count )
+    {
+        if ( ledIsOn )
+        {
+            greenLed->clear();
+        }
+        else
+        {
+            greenLed->set();
+        }
+        ledIsOn = !ledIsOn;
+        count = 1000;
+    }
+    count--;
+}
 /* __dso_handle is apparently expected by the linker */
 void* __dso_handle = 0;

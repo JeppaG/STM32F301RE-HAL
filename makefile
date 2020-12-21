@@ -38,6 +38,8 @@ $(shell mkdir -p $(OBJ_PATH))
 OBJ :=
 
 include main/make.mk
+include startup/make.mk
+include exception/make.mk
 include clockGenerator/make.mk
 include gpio/make.mk
 include timer/make.mk

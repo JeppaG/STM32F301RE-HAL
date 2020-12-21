@@ -15,26 +15,34 @@
  *
  *****************************************************************************
  *
- * exception.cpp
+ * exception.hpp
  *
- *  Created on: 03 Jun 2020
+ * Application interface of exceptions.
+ *
+ *  Created on: 28 Sep 2020
  *      Author: jeppa
  */
 
+#ifndef EXCEPTION_IF_EXCEPTION_HPP_
+#define EXCEPTION_IF_EXCEPTION_HPP_
+
 #include <cstdint>
-#include "startup.hpp"
-#include "exception.hpp"
 
-/*********************************************************************
- * Symbols defined in the linker script
- */
 
-extern uintptr_t __stack_end__;
-
-const Exception::handlerType __vector_table__[]
-	__attribute__((section(".vectors")))
+class Exception
 {
-	/* Stack pointer */	    reinterpret_cast<Exception::handlerType>( &__stack_end__),
-	/* Code entry point */	reinterpret_cast<Exception::handlerType>( Startup::lowLevelInit ),
+public:
+	typedef void (*handlerType)(void);
+
+	virtual void setPriority( uint8_t priority )=0;
+	virtual void enable()=0;
+	virtual ~Exception() = 0;
+	static void enableGlobal();
+	static void disableGlobal();
+
+private:
+	static void defaultHandler();
+	static const Exception::handlerType __vector_table__[];
 };
 
+#endif /* EXCEPTION_IF_EXCEPTION_HPP_ */

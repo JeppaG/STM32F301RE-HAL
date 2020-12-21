@@ -15,29 +15,28 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+local_dir := $(PROJ_ROOT)/exception
 
 local_used_if := \
   startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
+  main \
 
 local_used_imp := \
-  $(local_used_if) \
-  
+
 local_src := \
-  main.cpp \
+  exceptionGlobal.cpp \
+  exceptionImp.cpp \
+  exceptionVector.cpp \
 
-main_source_path := $(local_dir)/src
+exception_source_path := $(local_dir)/src
 
-main_include_path := \
+exception_include_path := \
   -I $(local_dir)/if \
+  -I $(local_dir)/imp \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
+$(OBJ_PATH)/%.o : $(exception_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(exception_include_path) $< -o$@ 
       		 
 OBJ += $(local_src:.cpp=.o)

@@ -15,29 +15,24 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+local_dir := $(PROJ_ROOT)/startup
 
 local_used_if := \
-  startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
 
 local_used_imp := \
   $(local_used_if) \
   
 local_src := \
-  main.cpp \
+  startup.cpp \
 
-main_source_path := $(local_dir)/src
+startup_source_path := $(local_dir)/src
 
-main_include_path := \
-  -I $(local_dir)/if \
+startup_include_path := \
+  -I $(local_dir)/inc \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
+$(OBJ_PATH)/%.o : $(startup_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(startup_include_path) $< -o$@ 
       		 
 OBJ += $(local_src:.cpp=.o)

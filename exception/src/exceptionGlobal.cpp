@@ -15,23 +15,21 @@
  *
  *****************************************************************************
  *
- * exception.cpp
+ * exceptionImp.cpp
  *
- *  Created on: 03 Jun 2020
+ *  Created on: 20 Dec 2020
  *      Author: jeppa
  */
 
-#ifndef INC_EXCEPTION_HPP_
-#define INC_EXCEPTION_HPP_
+#include "exception.hpp"
 
-#include <cstdint>
-
-class Exception
+void Exception::enableGlobal()
 {
-public:
-	typedef void (*handlerType)(void);
-};
+	asm( "CPSIE I" );
+}
 
+void Exception::disableGlobal()
+{
+	asm( "CPSID I" );
+}
 
-
-#endif /* INC_EXCEPTION_HPP_ */

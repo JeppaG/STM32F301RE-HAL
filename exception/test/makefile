@@ -15,29 +15,22 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+PROJ_ROOT = ../..
 
-local_used_if := \
-  startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
+include $(PROJ_ROOT)/testCommon/commonHeader.mk 
 
-local_used_imp := \
-  $(local_used_if) \
+# Source file list
+
+DUT_SOURCE = \
+  exceptionImp.cpp \
   
-local_src := \
-  main.cpp \
+TEST_SOURCE = \
+  exceptionTest.cpp \
 
-main_source_path := $(local_dir)/src
+MOCK_SOURCE = \
+  mockAssert.cpp \
+      
+USED_UNITS = \
+  assert \
 
-main_include_path := \
-  -I $(local_dir)/if \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
-  
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
-      		 
-OBJ += $(local_src:.cpp=.o)
+include $(PROJ_ROOT)/testCommon/commonFooter.mk
