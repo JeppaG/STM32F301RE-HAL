@@ -69,6 +69,7 @@ void Main::main()
 	Exception::enableGlobal();
 	while ( true )
 	{
+	    /* Do nothing */
 	}
 }
 
