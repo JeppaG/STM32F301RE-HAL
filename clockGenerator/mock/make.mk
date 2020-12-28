@@ -14,33 +14,19 @@
 #  limitations under the License.
 #
 #****************************************************************************
-   
-$(shell mkdir -p $(BUILD_PATH))
-$(shell mkdir -p $(OBJ_PATH))
+
+local_dir := $(PROJ_ROOT)/clockGenerator
+
+local_src := \
+  clockGeneratorMock.cpp \
+
+clock_generator_mock_source_path := $(local_dir)/mock/src
+
+INCLUDE_PATH += -I $(local_dir)/if
+INCLUDE_PATH += -I $(local_dir)/mock/inc 
   
-OBJ += $(DUT_SOURCE:.cpp=.o)
-OBJ += $(TEST_SOURCE:.cpp=.o)
-
-$(OBJ_PATH)/%.o : $(DUT_SOURCE_PATH)/%.cpp
+$(OBJ_PATH)/%.o : $(clock_generator_mock_source_path)/%.cpp
 	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@ 
-      
-$(OBJ_PATH)/%.o : $(TEST_SOURCE_PATH)/%.cpp
-	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@
-	
-$(BUILD_PATH)/test.exe : $(addprefix $(OBJ_PATH)/, $(OBJ))
-	$(LD) $(LD_FLAGS) $^ $(TEST_LIB_PATH)/libCppUTest.a $(TEST_LIB_PATH)/libCppUTestExt.a -o$@
-		 
-clean :
-	rm $(BUILD_PATH)/test.exe $(OBJ_PATH)/*.*
-	
--include $(addprefix $(OBJ_PATH), $(OBJ:.o=.d))
-    
-.PHONY : debug
-sp := 
-sp +=
-debug : ; $(info $$(USED_UNITS) is [ $(USED_UNITS) ])
-	
-all : $(BUILD_PATH)/test.exe
+      		 
+OBJ += $(local_src:.cpp=.o)
 
-run : $(BUILD_PATH)/test.exe
-	$(BUILD_PATH)/test.exe

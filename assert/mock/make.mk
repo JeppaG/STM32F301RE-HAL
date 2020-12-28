@@ -15,19 +15,17 @@
 #
 #****************************************************************************
 
-PROJ_ROOT = ../..
+local_dir := $(PROJ_ROOT)/assert
 
-include $(PROJ_ROOT)/testCommon/commonHeader.mk 
+local_src := \
+  assertMock.cpp \
 
-# Source file list
+assert_mock_source_path := $(local_dir)/mock/src
 
-DUT_SOURCE = \
-  clockGeneratorImp.cpp \
-  
-TEST_SOURCE = \
-  clockGeneratorTest.cpp \
-
-# Used units
-include $(PROJ_ROOT)/assert/mock/make.mk
-
-include $(PROJ_ROOT)/testCommon/commonFooter.mk
+INCLUDE_PATH += -I $(local_dir)/if
+INCLUDE_PATH += -I $(local_dir)/mock/inc 
+    
+$(OBJ_PATH)/%.o : $(assert_mock_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@ 
+      		 
+OBJ += $(local_src:.cpp=.o)

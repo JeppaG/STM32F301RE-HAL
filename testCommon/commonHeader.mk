@@ -14,13 +14,10 @@
 #  limitations under the License.
 #
 #****************************************************************************
- 
 BUILD_PATH = build
 OBJ_PATH = $(BUILD_PATH)/obj
 DUT_SOURCE_PATH = ../src
 TEST_SOURCE_PATH = .
-MOCK_SOURCE_PATH = $(PROJ_ROOT)/mock/src
-MOCK_INC_PATH = $(PROJ_ROOT)/mock/inc
 TEST_LIB_PATH = $(PROJ_ROOT)/cpputest/cpputest_build/lib
 
 G++ = g++
@@ -29,3 +26,9 @@ LD = g++
 G++_FLAGS = -O0 -c -g -Wall
 LD_FLAGS = -g -Wall
         
+OBJ :=
+
+INCLUDE_PATH := \
+  -I ../if \
+  -I ../imp \
+  -I $(PROJ_ROOT)/cpputest/include \

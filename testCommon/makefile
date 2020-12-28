@@ -15,19 +15,19 @@
 #
 #****************************************************************************
 
-PROJ_ROOT = ../..
+TOPTARGETS := all run clean
+PROJ_ROOT = ..
 
-include $(PROJ_ROOT)/testCommon/commonHeader.mk 
+UNITS := \
+    clockGenerator \
+    exception \
+    gpio \
+    timer \
+    
+TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
 
-# Source file list
-
-DUT_SOURCE = \
-  clockGeneratorImp.cpp \
-  
-TEST_SOURCE = \
-  clockGeneratorTest.cpp \
-
-# Used units
-include $(PROJ_ROOT)/assert/mock/make.mk
-
-include $(PROJ_ROOT)/testCommon/commonFooter.mk
+$(TOPTARGETS): $(TEST_DIRS)
+$(TEST_DIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+	
+.PHONY: $(TOPTARGETS) $(TEST_DIRS)

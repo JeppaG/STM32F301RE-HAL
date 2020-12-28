@@ -15,31 +15,36 @@
  *
  *****************************************************************************
  *
- * clockImp.hpp
- *
- * Mock implementation header of the clock interface
+ * clockeneratorMock.cpp Implementation of mock ClockGenerator classes
  *
  *  Created on: 28 Sep 2020
  *      Author: jeppa
  */
 
-#ifndef MOCK_INC_CLOCKGENERATORMOCK_HPP_
-#define MOCK_INC_CLOCKGENERATORMOCK_HPP_
+#include "CppUTestExt/MockSupport.h"
+#include "clockGeneratorMock.hpp"
 
-#include <cstdint>
-
-#include "clockGenerator.hpp"
-
-
-class PeripheralRccMock : public PeripheralRcc
+PeripheralRccMock::PeripheralRccMock()
 {
-public:
-	PeripheralRccMock();
+}
 
-	~PeripheralRccMock();
+PeripheralRccMock::~PeripheralRccMock()
+{
+}
 
-	void enableClock();
+PeripheralRcc::~PeripheralRcc()
+{
+    /* C++ demands that even a pure virtual destructor has an implementation */
+}
 
-};
+void PeripheralRccMock::enableClock()
+{
+	mock().actualCall( "enableClock" )
+		  .onObject( this );
+}
 
-#endif /* MOCK_INC_CLOCKGENERATORMOCK_HPP_ */
+void PeripheralRccMock::expectEnableClock()
+{
+    mock().expectOneCall( "enableClock" )
+          .onObject( this );
+}

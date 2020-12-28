@@ -27,12 +27,8 @@ DUT_SOURCE = \
 TEST_SOURCE = \
   gpioTest.cpp \
 
-MOCK_SOURCE = \
-  mockAssert.cpp \
-  clockGeneratorMock.cpp \
-
-USED_UNITS = \
-  clockGenerator \
-  assert \
+# Used units
+include $(PROJ_ROOT)/assert/mock/make.mk
+include $(PROJ_ROOT)/clockGenerator/mock/make.mk
 
 include $(PROJ_ROOT)/testCommon/commonFooter.mk

@@ -91,7 +91,8 @@ TEST_GROUP( Gpio )
 	gpioRegisterType expectedRegister;
 	gpioRegisterType actualRegister;
 
-	PeripheralRcc* rcc;
+	PeripheralRcc*     rcc;
+	PeripheralRccMock* rccMock;
 
 	void vInitializeTestRegistersToGpioAResetValues()
 	{
@@ -111,71 +112,78 @@ TEST_GROUP( Gpio )
 		memcpy( &actualRegister, &resetRegister, sizeof( gpioRegisterType ) );
 	}
 
+	Gpio* instantiateGpioA( uint32_t pin)
+	{
+	    mock().disable();
+	    vInitializeTestRegistersToGpioAResetValues();
+	    Gpio* gpioA = static_cast<Gpio*>( new GpioImp(  /* GPIOA Base address */ &actualRegister,
+	                                                    /* Peripheral RCC   */   rcc,
+	                                                    /* Pin              */   pin ) );
+	    mock().enable();
+	    return gpioA;
+	}
+
 	void setup()
 	{
 		vInitializeTestRegistersToResetValues();
-		rcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccMock() );
+		rccMock = new PeripheralRccMock();
+		rcc = static_cast<PeripheralRcc*>( rccMock );
 	}
 
 	void teardown()
 	{
-		delete rcc;
+	    rcc = nullptr;
+		delete rccMock;
 		mock().checkExpectations();
 		mock().clear();
 	}
 };
 
-/*! Check that when GPIOA pin 5 is instantiated as a digital output,PushPull and Low-speed with polarity ACTIVE_HIGH,
- *  the peripheral clock is enabled for GPIOA. Pin 5 is set to an output with PushPull output stage and the initial
- *  value is set to LOW
+/*! Check that when GPIOA pin 5 is instantiated the peripheral clock is enabled for GPIOA.
  */
-TEST( Gpio, InstantiatGpioA1AsOutputPushPullLowspeedActiveLow )
+TEST( Gpio, InstantiatGpioA5 )
 {
 	vInitializeTestRegistersToGpioAResetValues();
 
-	mock().expectOneCall( "enableClock" ).onObject( rcc );
-	expectedRegister.mode        = 0x0C000400; /* Bit 5 is set as an output */
-	expectedRegister.bitSetReset = 0x00200000; /* Reset output bit 5 */
+	rccMock->expectEnableClock();
 
-	DigitalOutput* output = dynamic_cast<DigitalOutput*>
-	                        ( new DigitalOutputImp( /* GPIOA Base address */ &actualRegister,
-			                                        /* Peripheral RCC   */   rcc,
-							  		                /* Pin              */   Gpio::pin5,
-							  					    /* Output type      */   DigitalOutput::pushPull,
-												    /* Speed            */   DigitalOutput::lowSpeed,
-												    /* Polarity         */   Gpio::activeHigh ) );
+	Gpio* gpioA5 = static_cast<Gpio*>( new GpioImp(  /* GPIOA Base address */ &actualRegister,
+                                                     /* Peripheral RCC   */   rcc,
+                                                     /* Pin              */   Gpio::pin5 ) );
 
-	CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
-	CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
+	delete gpioA5;
+}
+/*! Check that when GPIOA pin 5 is instantiated and set as digital output,
+ *  Pin 5 is set to an output, and the pin output is cleared.
+ */
+TEST( Gpio, SetGpioA5ToDigitalOutput )
+{
+    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
 
-	delete output;
+    expectedRegister.mode = 0x0C000400;
+    expectedRegister.bitSetReset = 0x00200000;
+    gpioA5->setToDigitalOutput();
+    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
+    CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
+
+    delete gpioA5;
 }
 
-/*! Check that when GPIOA pin 5 is instantiated as a digital output that is ACTIVE_HIGH and the output
- *  is set, gpioA pin 5 is set
+/*! Check that when GPIOA pin 5 is set as a digital output and the output is set
+ *   gpioA pin 5 is set
  *
  */
 TEST( Gpio, SetGpio5 )
 {
-	vInitializeTestRegistersToGpioAResetValues();
-
-	mock().disable();
-	DigitalOutput* output = dynamic_cast<DigitalOutput*>
-	                        ( new DigitalOutputImp( /* GPIOA Base address */ &actualRegister,
-			                                        /* Peripheral RCC   */   rcc,
-							  		                /* Pin              */   Gpio::pin5,
-							  					    /* Output type      */   DigitalOutput::pushPull,
-												    /* Speed            */   DigitalOutput::lowSpeed,
-												    /* Polarity         */   Gpio::activeHigh ) );
+    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
+    gpioA5->setToDigitalOutput();
 
 	actualRegister.bitSetReset = 0x00000000;
 	expectedRegister.bitSetReset = 0x00000020;
-
-	output->set();
-
+	gpioA5->set();
 	CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
 
-	delete output;
+	delete gpioA5;
 }
 
 /*! Check that when GPIOA pin 5 is instantiated as a digital output that is ACTIVE_HIGH and the output
@@ -184,25 +192,15 @@ TEST( Gpio, SetGpio5 )
  */
 TEST( Gpio, ClearGpio5 )
 {
-	vInitializeTestRegistersToGpioAResetValues();
-
-	mock().disable();
-	DigitalOutput* output = dynamic_cast<DigitalOutput*>
-	                        ( new DigitalOutputImp( /* GPIOA Base address */ &actualRegister,
-			                                        /* Peripheral RCC   */   rcc,
-							  		                /* Pin              */   Gpio::pin5,
-							  					    /* Output type      */   DigitalOutput::pushPull,
-												    /* Speed            */   DigitalOutput::lowSpeed,
-												    /* Polarity         */   Gpio::activeHigh ) );
+    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
+    gpioA5->setToDigitalOutput();
 
 	actualRegister.bitSetReset = 0x00000000;
 	expectedRegister.bitSetReset = 0x00200000;
-
-	output->clear();
-
+	gpioA5->clear();
 	CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
 
-	delete output;
+	delete gpioA5;
 }
 
 int main( int ac, char** av )

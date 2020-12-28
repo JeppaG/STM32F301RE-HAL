@@ -27,10 +27,7 @@ DUT_SOURCE = \
 TEST_SOURCE = \
   timerTest.cpp \
 
-MOCK_SOURCE = \
-  mockAssert.cpp \
-      
-USED_UNITS = \
-  assert \
+# Used units
+include $(PROJ_ROOT)/assert/mock/make.mk
 
 include $(PROJ_ROOT)/testCommon/commonFooter.mk

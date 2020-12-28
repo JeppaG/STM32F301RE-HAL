@@ -32,18 +32,10 @@ public:
 	static constexpr uint32_t pin5 = 0x00000020;
 	static constexpr uint32_t activeHigh = 0x00000001;
 	virtual ~Gpio() = 0;
-};
 
-class DigitalOutput
-{
-public:
-	static constexpr uint32_t pushPull = 0x00000001;
-	static constexpr uint32_t lowSpeed = 0x00000001;
-
-	virtual void set() =0;
-	virtual void clear() =0;
-
-	virtual ~DigitalOutput() =0;
+	virtual void setToDigitalOutput() = 0;
+	virtual void set() = 0;
+	virtual void clear() = 0;
 };
 
 #endif /* GPIO_IF_GPIO_HPP_ */

@@ -15,9 +15,9 @@
  *
  *****************************************************************************
  *
- * clockImp.hpp
+ * clockGeneratorImp.hpp
  *
- * Implementation header of the clok interface
+ * Implementation header of the clockGenerator interface
  *
  *  Created on: 24 Jul 2020
  *      Author: jeppa

@@ -23,43 +23,37 @@
 
 #include "gpioImp.hpp"
 
-DigitalOutputImp::DigitalOutputImp( void* const          gpioBaseAddress,
-		  	  	  	  	  	  	    PeripheralRcc* const peripheralRcc,
-		                            const uint32_t       pin,
-		                            const uint32_t       outputType,
-		                            const uint32_t       speed,
-		                            const uint32_t       polarity ) :
-gpio( reinterpret_cast<registerType* const>( gpioBaseAddress ) ),
-rcc( peripheralRcc )
+GpioImp::GpioImp( void* const          gpioBaseAddress,
+		  	  	  PeripheralRcc* const peripheralRcc,
+		          const uint32_t       pin ) :
+    gpio( reinterpret_cast<registerType* const>( gpioBaseAddress ) ),
+    rcc( peripheralRcc )
 {
 	rcc->enableClock();
-	gpio->mode |= 0x00000400;
-	gpio->bitSetReset |= 0x00200000;
 }
 
-void DigitalOutputImp::set()
+void GpioImp::setToDigitalOutput()
+{
+    gpio->mode |= 0x00000400;
+    gpio->bitSetReset = 0x00200000;
+}
+void GpioImp::set()
 {
 	gpio->bitSetReset = 0x00000020;
 }
 
-void DigitalOutputImp::clear()
+void GpioImp::clear()
 {
 	gpio->bitSetReset = 0x00200000;
 }
 
-DigitalOutputImp::~DigitalOutputImp()
+GpioImp::~GpioImp()
 {
 
-}
-
-DigitalOutput::~DigitalOutput()
-{
-	/* C++ demands that even a pure virtual destructor has an implementation */
 }
 
 Gpio::~Gpio()
 {
 	/* C++ demands that even a pure virtual destructor has an implementation */
 }
-
 

@@ -24,6 +24,7 @@
 #include "sysTick.hpp"
 
 #include <cstdint>
+
 #include "clockGeneratorImp.hpp"
 #include "sysTickTimerImp.hpp"
 #include "gpioImp.hpp"
@@ -35,12 +36,12 @@ void* const sysTickTimerBaseAddress = reinterpret_cast<void*>( 0xE000E010 );
 void* const gpioABaseAddress = reinterpret_cast<void*>( 0x40020000 );
 
 ClockGeneratorHsiImp clockGeneratorImp( /* RCC Base Address */ rccBaseAddress );
-ClockGenerator* clockGenerator = dynamic_cast<ClockGenerator*>( &clockGeneratorImp );
+ClockGenerator* clockGenerator = static_cast<ClockGenerator*>( &clockGeneratorImp );
 
 SysTickTimerImp sysTickTimerImp( /* sysTickTimerBaseAddress */ sysTickTimerBaseAddress,
 					             /* ahbClockRateInHz        */ 16000000,
 					             /* clockSelect             */ SysTickTimerImp::AHB_CLK_DIV_8 );
-Timer* sysTickTimer = dynamic_cast<Timer*>( &sysTickTimerImp );
+Timer* sysTickTimer = static_cast<Timer*>( &sysTickTimerImp );
 
 SysTickHandlerImp sysTickHandlerImp( /* scbBaseAddress */          scbBaseAddress,
                                      /* sysTickTimerBaseAddress */ sysTickTimerBaseAddress );
@@ -48,15 +49,12 @@ Exception* sysTickException = static_cast<Exception*>( &sysTickHandlerImp );
 
 PeripheralRccImp gpioARccImp( /* rccBaseAddress */ rccBaseAddress,
 		                      /* peripheralRcc  */ PeripheralRccImp::GPIOA );
-PeripheralRcc* gpioARcc = dynamic_cast<PeripheralRcc*>( &gpioARccImp );
+PeripheralRcc* gpioARcc = static_cast<PeripheralRcc*>( &gpioARccImp );
 
-DigitalOutputImp greenLedImp( /* gpioBaseAddress */ gpioABaseAddress,
-					          /* peripheralRcc   */ gpioARcc,
-					          /* pin             */ DigitalOutputImp::pin5,
-					          /* outputType      */ DigitalOutputImp::pushPull,
-					          /* speed           */ DigitalOutputImp::lowSpeed,
-					          /* polarity        */ DigitalOutputImp::activeHigh );
-DigitalOutput* greenLed = dynamic_cast<DigitalOutput*>( &greenLedImp );
+GpioImp greenLedImp( /* gpioBaseAddress */ gpioABaseAddress,
+					 /* peripheralRcc   */ gpioARcc,
+					 /* pin             */ GpioImp::pin5 );
+Gpio* greenLed = static_cast<Gpio*>( &greenLedImp );
 
 void Main::main()
 {
@@ -65,19 +63,12 @@ void Main::main()
 
 	uint16_t c = a + b;
 
+	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
 	Exception::enableGlobal();
 	while ( true )
 	{
-//		greenLed->set();
-//		for ( int i = 0; i < 64000; i++ )
-//		{
-//		}
-//		greenLed->clear();
-//		for ( int i = 0; i < 64000; i++ )
-//		{
-//		}
 	}
 }
 

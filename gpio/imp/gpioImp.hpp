@@ -29,21 +29,19 @@
 #include "gpio.hpp"
 #include "clockGenerator.hpp"
 
-class DigitalOutputImp : public DigitalOutput, public Gpio
+class GpioImp : public Gpio
 {
 public:
 
-	DigitalOutputImp( void* const          gpioBaseAddress,
-					  PeripheralRcc*       peripheralRcc,
-					  const uint32_t       pin,
-					  const uint32_t       outputType,
-					  const uint32_t       speed,
-					  const uint32_t       polarity );
+	GpioImp( void* const          gpioBaseAddress,
+	         PeripheralRcc*       peripheralRcc,
+		     const uint32_t       pin );
 
-	void set();
-	void clear();
+	virtual void setToDigitalOutput();
+    virtual	void set();
+	virtual void clear();
 
-	~DigitalOutputImp();
+	~GpioImp();
 
 private:
 	typedef struct
