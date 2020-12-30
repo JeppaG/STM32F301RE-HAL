@@ -15,5 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: change_directory
       run: cd testCommon
+    - name: pwd
+      run: pwd
     - name: CppuTest on host
       run: make run
