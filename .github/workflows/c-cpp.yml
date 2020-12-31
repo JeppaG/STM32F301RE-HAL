@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: checkout submodules
+      run: git submodule update --init
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
