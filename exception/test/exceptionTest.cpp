@@ -216,6 +216,10 @@ TEST( Exception, initSysTickTimerEnable )
 	delete sysTickException;
 }
 
+TEST( Exception, fail )
+{
+    FAIL( "Not Working" );
+}
 void Exception::enableGlobal()
 {
 	mock().actualCall( "Exception::enableGlobal" );
