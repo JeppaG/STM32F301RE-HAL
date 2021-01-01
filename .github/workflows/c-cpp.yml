@@ -15,6 +15,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: checkout submodules
       run: git submodule update --init
+    - name: autoreconf cppUTest
+      run: autoreconf .. -i
+      working-directory: ./cpputest/cpputest_build
+    - name: configure cppUTest
+      run: ../configure
+      working-directory: ./cpputest/cpputest_build
+    - name: build cppUTest
+      run: make
+      working-directory: ./cpputest/cpputest_build
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
