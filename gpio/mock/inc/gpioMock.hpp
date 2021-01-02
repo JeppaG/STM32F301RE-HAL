@@ -15,34 +15,58 @@
  *
  *****************************************************************************
  *
- * clockImp.hpp
+ * gpioMock.hpp
  *
- * Mock implementation header of the clockGenerator interface
+ * Mock implementation header of the gpio interface
  *
- *  Created on: 28 Sep 2020
+ *  Created on: 02 Jan 2021
  *      Author: jeppa
  */
 
-#ifndef MOCK_INC_CLOCKGENERATORMOCK_HPP_
-#define MOCK_INC_CLOCKGENERATORMOCK_HPP_
+#ifndef MOCK_INC_GPIOMOCK_HPP_
+#define MOCK_INC_GPIOMOCK_HPP_
 
 #include <cstdint>
 
-#include "clockGenerator.hpp"
+#include "gpio.hpp"
 
 
-class PeripheralRccMock : public PeripheralRcc
+class GpioMock : public Gpio
 {
 public:
-    PeripheralRccMock();
+    GpioMock();
 
-	~PeripheralRccMock();
+	~GpioMock();
 
 	/* Mocked functions */
-	void enableClock();
+	virtual void setToDigitalOutput();
+	virtual void set();
+	virtual void clear();
 
 	/* Test case helper functions */
-	void expectEnableClock();
+	void expectSetToDigitalOutput();
+	void expectSet();
+	void expectClear();
+
+private:
+	typedef enum
+	{
+	    UNDEFINED_PIN_MODE = 0,
+	    INPUT,
+	    OUTPUT,
+	    ALTERNATE_FUNCTION,
+	    ANALOG
+	} pinModeType;
+
+	typedef enum
+	{
+	    UNDEFINED_OUTPUT_VALUE = 0,
+	    SET,
+	    CLEARED
+	} outputValueType;
+
+	pinModeType     pinMode;
+	outputValueType outputValue;
 };
 
-#endif /* MOCK_INC_CLOCKGENERATORMOCK_HPP_ */
+#endif /* MOCK_INC_GPIOMOCK_HPP_ */
