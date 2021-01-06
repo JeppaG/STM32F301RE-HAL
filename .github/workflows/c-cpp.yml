@@ -35,6 +35,10 @@ jobs:
       run: npm config delete prefix
     - name: remove npm from path
       run: export PATH=${PATH%:/${HOME}/opt/npm/bin}
+    - name: install nvm
+      run: curl -o- https://raw.githubusercontent.com/nvm/master/install.sh | bash
+    - name: restart terminal
+      run: exec bash
     - name: install latest node
       run: nvm install --lts node
     - name: switch to latest node
