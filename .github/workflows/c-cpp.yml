@@ -27,6 +27,12 @@ jobs:
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
+    - name: remove nodejs
+      run: sudo rm -rf /usr/local/lib/nodejs
+    - name: remove npm
+      run: rm -rf ~/opt/npm
+    - name: delete npm
+      run: npm config delete prefix
     - name: install npm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
     - name: install xpm
