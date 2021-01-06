@@ -27,5 +27,7 @@ jobs:
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
+    - name: install xpm
+      run: npm install --global xpm@latest
     - name: install arm toolchain
       run: xpm install @gnu-mcu-eclipse/arm-none-eabi-gcc --global
