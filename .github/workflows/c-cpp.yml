@@ -40,9 +40,9 @@ jobs:
     - name: export new NVM dir
       run: export NVM_DIR=$HOME/.nvm
     - name: load NVM
-      run: $NVM_DIR/nvm.sh
+      run: ~/.nvm/nvm.sh
     - name: load nvm bash completion
-      run: $NVM_DIR/bash_completion
+      run: ~/.nvm/bash_completion
     - name: install latest node
       run: nvm install --lts node
     - name: switch to latest node
