@@ -33,6 +33,8 @@ jobs:
       run: rm -rf ~/opt/npm
     - name: delete npm
       run: npm config delete prefix
+    - name: remove npm from path
+      run: export PATH=${PATH%:/${HOME}/opt/npm/bin}
     - name: install npm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
     - name: install xpm
