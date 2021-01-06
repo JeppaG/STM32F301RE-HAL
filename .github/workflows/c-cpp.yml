@@ -37,8 +37,12 @@ jobs:
       run: export PATH=${PATH%:/${HOME}/opt/npm/bin}
     - name: install nvm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-    - name: restart terminal
-      run: exec bash
+    - name: export new NVM dir
+      run: export NVM_DIR="$HOME/.nvm"
+    - name: load NVM
+      run: [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    - name: load nvm bash completion
+      run: [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     - name: install latest node
       run: nvm install --lts node
     - name: switch to latest node
