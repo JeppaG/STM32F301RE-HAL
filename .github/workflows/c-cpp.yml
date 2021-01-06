@@ -35,8 +35,12 @@ jobs:
       run: npm config delete prefix
     - name: remove npm from path
       run: export PATH=${PATH%:/${HOME}/opt/npm/bin}
-    - name: install npm
-      run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+    - name: install latest node
+      run: nvm install --lts node
+    - name: switch to latest node
+      run: nvm use node
+    - name: install latest npm
+      run: nvm install-latest-npm
     - name: install xpm
       run: npm install --global xpm@latest
     - name: install arm toolchain
