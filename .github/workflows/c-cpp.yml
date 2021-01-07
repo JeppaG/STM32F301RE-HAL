@@ -13,8 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.4
     - name: checkout submodules
       run: git submodule update --init
     - name: autoreconf cppUTest
@@ -29,7 +27,3 @@ jobs:
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
-    - name: install xpm
-      run: npm install --global xpm@latest
-    - name: install arm toolchain
-      run: xpm install @gnu-mcu-eclipse/arm-none-eabi-gcc --global
