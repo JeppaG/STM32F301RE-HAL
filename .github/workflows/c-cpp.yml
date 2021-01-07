@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.4
     - name: checkout submodules
       run: git submodule update --init
     - name: autoreconf cppUTest
@@ -27,30 +29,6 @@ jobs:
     - name: CppuTest on host
       run: make run
       working-directory: ./testCommon
-    - name: remove nodejs
-      run: sudo rm -rf /usr/local/lib/nodejs
-    - name: remove npm
-      run: rm -rf ~/opt/npm
-    - name: delete npm
-      run: npm config delete prefix
-    - name: remove npm from path
-      run: export PATH=${PATH%:/${HOME}/opt/npm/bin}
-    - name: install nvm
-      run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-    - name: export new NVM dir
-      run: export NVM_DIR=~/.nvm
-    - name: change permissions for nvm.sh
-      run: "chmod 777 $NVM_DIR/nvm.sh"
-    - name: load NVM
-      run: "$NVM_DIR/nvm.sh"
-    - name: load nvm bash completion
-      run: ~/.nvm/bash_completion
-    - name: install latest node
-      run: nvm install --lts node
-    - name: switch to latest node
-      run: nvm use node
-    - name: install latest npm
-      run: nvm install-latest-npm
     - name: install xpm
       run: npm install --global xpm@latest
     - name: install arm toolchain
