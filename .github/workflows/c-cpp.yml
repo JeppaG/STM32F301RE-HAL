@@ -38,9 +38,11 @@ jobs:
     - name: install nvm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
     - name: export new NVM dir
-      run: export NVM_DIR=$HOME/.nvm
+      run: export NVM_DIR=~/.nvm
+    - name: change permissions for nvm.sh
+      run: "chmod 777 $NVM_DIR/nvm.sh"
     - name: load NVM
-      run: ~/.nvm/nvm.sh
+      run: "$NVM_DIR/nvm.sh"
     - name: load nvm bash completion
       run: ~/.nvm/bash_completion
     - name: install latest node
