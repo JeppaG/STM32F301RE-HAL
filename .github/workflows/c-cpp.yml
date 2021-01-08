@@ -15,6 +15,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Setup Node.js environment
       uses: actions/setup-node@v2.1.4
+    - name: Setup xpm
+      run: npm install --global xpm@latest
+    - name: Test xpm
+      run: which xpm 
     - name: checkout submodules
       run: git submodule update --init
     - name: autoreconf cppUTest
