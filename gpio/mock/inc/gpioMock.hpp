@@ -40,11 +40,13 @@ public:
 
 	/* Mocked functions */
 	virtual void setToDigitalOutput();
+    virtual void setToAlternateFunction( const uint32_t alternateFunction );
 	virtual void set();
 	virtual void clear();
 
 	/* Test case helper functions */
 	void expectSetToDigitalOutput();
+	void expectSetToAlternateFunction( const uint32_t alternateFunction );
 	void expectSet();
 	void expectClear();
 
@@ -67,6 +69,7 @@ private:
 
 	pinModeType     pinMode;
 	outputValueType outputValue;
+	uint32_t        altFunc;
 };
 
 #endif /* MOCK_INC_GPIOMOCK_HPP_ */

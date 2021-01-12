@@ -148,8 +148,8 @@ TEST( Gpio, InstantiatGpioA5 )
 	rccMock->expectEnableClock();
 
 	Gpio* gpioA5 = static_cast<Gpio*>( new GpioImp(  /* GPIOA Base address */ &actualRegister,
-                                                     /* Peripheral RCC   */   rcc,
-                                                     /* Pin              */   Gpio::pin5 ) );
+                                                     /* Peripheral RCC     */ rcc,
+                                                     /* Pin Number         */ Gpio::pin5 ) );
 
 	delete gpioA5;
 }
@@ -158,7 +158,7 @@ TEST( Gpio, InstantiatGpioA5 )
  */
 TEST( Gpio, SetGpioA5ToDigitalOutput )
 {
-    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
+    Gpio* gpioA5 = instantiateGpioA( /* pinNumber */ Gpio::pin5);
 
     expectedRegister.mode = 0x0C000400;
     expectedRegister.bitSetReset = 0x00200000;
@@ -175,7 +175,7 @@ TEST( Gpio, SetGpioA5ToDigitalOutput )
  */
 TEST( Gpio, SetGpio5 )
 {
-    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
+    Gpio* gpioA5 = instantiateGpioA( /* pinNumber */ Gpio::pin5);
     gpioA5->setToDigitalOutput();
 
 	actualRegister.bitSetReset = 0x00000000;
@@ -186,21 +186,38 @@ TEST( Gpio, SetGpio5 )
 	delete gpioA5;
 }
 
-/*! Check that when GPIOA pin 5 is instantiated as a digital output that is ACTIVE_HIGH and the output
- *  is cleared, gpioA pin 5 is cleared
+/*! Check that when GPIOA pin 9 is instantiated and set to alternate function AF7,
+ *  the pin is set as alternate function and the AF selected is AF7
  *
  */
-TEST( Gpio, ClearGpio5 )
+TEST( Gpio, SetGpioA9AsAf7 )
 {
-    Gpio* gpioA5 = instantiateGpioA( /* pin */ Gpio::pin5);
-    gpioA5->setToDigitalOutput();
+    Gpio* gpioA9 = instantiateGpioA( /* pinNumber */ Gpio::pin9 );
 
-	actualRegister.bitSetReset = 0x00000000;
-	expectedRegister.bitSetReset = 0x00200000;
-	gpioA5->clear();
-	CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
+    expectedRegister.mode = 0x0C080000;
+    expectedRegister.alternateFunctionHigh = 0x00000070;
+    gpioA9->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
+    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
+    CHECK_EQUAL( expectedRegister.alternateFunctionHigh, actualRegister.alternateFunctionHigh );
 
-	delete gpioA5;
+	delete gpioA9;
+}
+
+/*! Check that when GPIOA pin 10 is instantiated and set to alternate function AF7,
+ *  the pin is set as alternate function and the AF selected is AF7
+ *
+ */
+TEST( Gpio, SetGpioA10AsAf7 )
+{
+    Gpio* gpioA10 = instantiateGpioA( /* pinNumber */ Gpio::pin10 );
+
+    expectedRegister.mode = 0x0C200000;
+    expectedRegister.alternateFunctionHigh = 0x00000070;
+    gpioA10->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
+    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
+    CHECK_EQUAL( expectedRegister.alternateFunctionHigh, actualRegister.alternateFunctionHigh );
+
+    delete gpioA10;
 }
 
 int main( int ac, char** av )

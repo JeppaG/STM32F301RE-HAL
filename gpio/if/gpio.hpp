@@ -29,11 +29,15 @@
 class Gpio
 {
 public:
-	static constexpr uint32_t pin5 = 0x00000020;
-	static constexpr uint32_t activeHigh = 0x00000001;
+	static constexpr uint32_t pin5  = 0x00000020;
+	static constexpr uint32_t pin9  = 0x00000200;
+	static constexpr uint32_t pin10 = 0x00000400;
+
+	static constexpr uint32_t AF07 = 7;
 	virtual ~Gpio() = 0;
 
 	virtual void setToDigitalOutput() = 0;
+	virtual void setToAlternateFunction( const uint32_t alternateFunction ) = 0;
 	virtual void set() = 0;
 	virtual void clear() = 0;
 };
