@@ -25,8 +25,9 @@
 #include "gpioMock.hpp"
 
 GpioMock::GpioMock() :
-    pinMode    ( UNDEFINED_PIN_MODE ),
-    outputValue( UNDEFINED_OUTPUT_VALUE )
+    pinMode          ( UNDEFINED_PIN_MODE ),
+    outputValue      ( UNDEFINED_OUTPUT_VALUE ),
+    altFunc          ( 0xFFFFFFFF )
 {
 }
 
@@ -45,6 +46,17 @@ void GpioMock::setToDigitalOutput()
     {
         mock().actualCall( "setToDigitalOutput" ).onObject( this );
         pinMode = OUTPUT;
+    }
+}
+
+void GpioMock::setToAlternateFunction( const uint32_t alternateFunction )
+{
+    if ( altFunc != alternateFunction )
+    {
+        mock().actualCall( "setToAlternateFunction" )
+              .onObject( this )
+              .withIntParameter( "alternateFunction", static_cast<int>( alternateFunction ) );
+        altFunc = alternateFunction;
     }
 }
 
@@ -71,6 +83,14 @@ void GpioMock::expectSetToDigitalOutput()
     mock().expectOneCall( "setToDigitalOutput" )
           .onObject( this );
     pinMode = UNDEFINED_PIN_MODE;
+}
+
+void GpioMock::expectSetToAlternateFunction( const uint32_t alternateFunction )
+{
+    mock().expectOneCall( "setToAlternateFunction" )
+          .onObject( this )
+          .withIntParameter( "alternateFunction", static_cast<int>( alternateFunction ) );
+    altFunc = 0xFFFFFFFF;
 }
 
 void GpioMock::expectSet()

@@ -25,9 +25,11 @@
 
 GpioImp::GpioImp( void* const          gpioBaseAddress,
 		  	  	  PeripheralRcc* const peripheralRcc,
-		          const uint32_t       pin ) :
+		          const uint32_t       pinNumber ) :
     gpio( reinterpret_cast<registerType* const>( gpioBaseAddress ) ),
-    rcc( peripheralRcc )
+    rcc( peripheralRcc ),
+    pin( pinNumber )
+
 {
 	rcc->enableClock();
 }
@@ -37,6 +39,7 @@ void GpioImp::setToDigitalOutput()
     gpio->mode |= 0x00000400;
     gpio->bitSetReset = 0x00200000;
 }
+
 void GpioImp::set()
 {
 	gpio->bitSetReset = 0x00000020;
@@ -45,6 +48,12 @@ void GpioImp::set()
 void GpioImp::clear()
 {
 	gpio->bitSetReset = 0x00200000;
+}
+
+void GpioImp::setToAlternateFunction( const uint32_t alternateFunction )
+{
+    gpio->mode |= pin*pin*2;
+    gpio->alternateFunctionHigh |= 0x00000070;
 }
 
 GpioImp::~GpioImp()

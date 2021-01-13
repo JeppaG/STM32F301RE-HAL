@@ -35,9 +35,10 @@ public:
 
 	GpioImp( void* const          gpioBaseAddress,
 	         PeripheralRcc*       peripheralRcc,
-		     const uint32_t       pin );
+		     const uint32_t       pinNumber );
 
 	virtual void setToDigitalOutput();
+    virtual void setToAlternateFunction( const uint32_t alternateFunction );
     virtual	void set();
 	virtual void clear();
 
@@ -58,8 +59,9 @@ private:
 		volatile uint32_t alternateFunctionHigh; /* Base address + 0x24 */
 	} registerType;
 
-	registerType* const gpio;
+	registerType*  const gpio;
 	PeripheralRcc* rcc;
+	uint32_t       const pin;
 };
 
 #endif /* GPIO_IMP_GPIOIMP_HPP_ */
