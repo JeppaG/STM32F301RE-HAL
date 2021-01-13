@@ -23,11 +23,15 @@
 
 #include "usartImp.hpp"
 
-UsartImp::UsartImp( void* const usartBaseAddress )
+Usart1_2Imp::Usart1_2Imp( void* const usartBaseAddress,
+						  Gpio*		 rxPin,
+						  Gpio*		 txPin )
 {
+	rxPin->setToAlternateFunction( Gpio::AF07 );
+	txPin->setToAlternateFunction( Gpio::AF07 );
 }
 
-UsartImp::~UsartImp()
+Usart1_2Imp::~Usart1_2Imp()
 {
 }
 

@@ -27,10 +27,10 @@
 #define USART_IMP_USARTIMP_HPP_
 
 #include <cstdint>
-
+#include "gpio.hpp"
 #include "usart.hpp"
 
-class UsartImp
+class Usart1_2Imp:public Usart
 {
 public:
     typedef struct
@@ -44,9 +44,11 @@ public:
         volatile uint32_t guardTimeAndPrescaler; /* Base address + 0x18 */
     } registerType;
 
-    UsartImp( void* const usartBaseAddress );
+    Usart1_2Imp( void* const usartBaseAddress,
+    			 Gpio*		 rxPin,
+				 Gpio*		 txPin );
 
-	~UsartImp();
+	~Usart1_2Imp();
 };
 
 

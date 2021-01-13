@@ -26,11 +26,10 @@ DUT_SOURCE = \
   
 TEST_SOURCE = \
   usartTest.cpp \
-
-MOCK_SOURCE = \
-  mockAssert.cpp \
-
+  
 USED_UNITS = \
-  assert \
+  include $(PROJ_ROOT)/assert/mock/make.mk
+  include $(PROJ_ROOT)/gpio/mock/make.mk
+  
 
 include $(PROJ_ROOT)/testCommon/commonFooter.mk

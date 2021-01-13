@@ -18,7 +18,7 @@
 local_dir := $(PROJ_ROOT)/gpio
 
 local_src := \
-  GpioMock.cpp \
+  gpioMock.cpp \
 
 gpio_mock_source_path := $(local_dir)/mock/src
 

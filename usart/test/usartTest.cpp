@@ -26,6 +26,7 @@
 #include "CppUTestExt/MockSupport.h"
 #include "CppUTest/CommandLineTestRunner.h"
 #include "usartImp.hpp"
+#include "gpioMock.hpp"
 
 TEST_GROUP( Usart  )
 {
@@ -54,6 +55,11 @@ TEST_GROUP( Usart  )
 	usartRegisterType expectedRegister;
 	usartRegisterType actualRegister;
 
+	GpioMock* rxPinMock;
+	GpioMock* txPinMock;
+	Gpio* 	  txPin;
+	Gpio* 	  rxPin;
+
 	Usart* usart;
 
 	void vInitializeTestRegistersToResetValues()
@@ -65,20 +71,33 @@ TEST_GROUP( Usart  )
 	void setup()
 	{
 		vInitializeTestRegistersToResetValues();
+		rxPinMock = new GpioMock;
+		txPinMock = new GpioMock;
+		rxPin = static_cast <Gpio*> (rxPinMock);
+		txPin = static_cast <Gpio*> (txPinMock);
+
 	}
 
 	void teardown()
 	{
 		mock().checkExpectations();
 		mock().clear();
+		delete rxPinMock;
+		delete txPinMock;
+		rxPin = nullptr;
+		txPin = nullptr;
 	}
 };
 
-/*! Check that when Usart1_2 is instantiated the Rx pand Tx pins are set to alternate function AF07.
+/*! Check that when Usart1_2 is instantiated the Rx and Tx pins are set to alternate function AF07.
  */
 TEST( Usart, InstantiateUsart1_2 )
 {
-	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister ) );
+	txPinMock->expectSetToAlternateFunction( Gpio::AF07 );
+	rxPinMock->expectSetToAlternateFunction( Gpio::AF07 );
+	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
+												  /* rxPin */			   rxPin,
+												  /* txPin */			   txPin ) );
 
 	CHECK_EQUAL( expectedRegister.status, actualRegister.status );
 
