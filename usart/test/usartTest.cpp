@@ -17,8 +17,8 @@
  *
  *  usartTest.cpp
  *
- *  Created on: 22-Dec 2020
- *      Author: jeppa
+ *  Created on: 22-Dec 2020 latest modified: 16 jan 2021
+ *      Author: jeppa & Viktor
  */
 
 #include <cstring>
@@ -101,6 +101,18 @@ TEST( Usart, InstantiateUsart1_2 )
 
 	CHECK_EQUAL( expectedRegister.status, actualRegister.status );
 
+	delete usart;
+}
+
+TEST ( Usart, WriteToUsart1 )
+{
+	expectedRegister.data=0x00000041; //expect to set usart1 to "a"
+	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
+												  /* rxPin */			   rxPin,
+												  /* txPin */			   txPin ) );
+	//data = write
+	usart->write('a');
+	CHECK_EQUAL( expectedRegister.data, actualRegister.data );
 	delete usart;
 }
 
