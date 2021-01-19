@@ -27,6 +27,7 @@
 #define USART_IMP_USARTIMP_HPP_
 
 #include <cstdint>
+#include "clockGenerator.hpp"
 #include "gpio.hpp"
 #include "usart.hpp"
 
@@ -44,9 +45,10 @@ public:
         volatile uint32_t guardTimeAndPrescaler; /* Base address + 0x18 */
     } registerType;
 
-    Usart1_2Imp( void* const usartBaseAddress,
-    			 Gpio*		 rxPin,
-				 Gpio*		 txPin );
+    Usart1_2Imp( void* const    usartBaseAddress,
+                 PeripheralRcc* rcc,
+    			 Gpio*		    rxPin,
+				 Gpio*		    txPin );
 
 	~Usart1_2Imp();
 };

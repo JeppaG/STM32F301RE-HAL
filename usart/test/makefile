@@ -29,6 +29,7 @@ TEST_SOURCE = \
   
 USED_UNITS = \
   include $(PROJ_ROOT)/assert/mock/make.mk
+  include $(PROJ_ROOT)/clockGenerator/mock/make.mk
   include $(PROJ_ROOT)/gpio/mock/make.mk
   
 

@@ -190,6 +190,24 @@ TEST( ClockGenerator, EnableGpioA )
     delete peripheralRcc;
 }
 
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  GPIOA, the PIOA Clock Enable bit in the AHB1ClockEnable register is set
+ */
+TEST( ClockGenerator, EnableUsart1 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
+    CHECK_EQUAL( expectedRegister.apb2ClockEnable, actualRegister.apb2ClockEnable );
+
+    expectedRegister.apb2ClockEnable |= 0x00000010; /* USART1 ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+
+    CHECK_EQUAL( expectedRegister.apb2ClockEnable, actualRegister.apb2ClockEnable );
+
+    delete peripheralRcc;
+}
+
 int main( int ac, char** av )
 {
 	return CommandLineTestRunner::RunAllTests( ac, av );

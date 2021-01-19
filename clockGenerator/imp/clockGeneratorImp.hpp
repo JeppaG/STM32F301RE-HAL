@@ -74,7 +74,8 @@ public:
 
 	typedef enum
 	{
-		GPIOA
+		GPIOA,
+		USART1
 	} PeripheralRccType;
 
 	~ClockGeneratorCommonImp();
