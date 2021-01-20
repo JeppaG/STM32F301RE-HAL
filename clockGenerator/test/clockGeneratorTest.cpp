@@ -208,6 +208,17 @@ TEST( ClockGenerator, EnableUsart1 )
     delete peripheralRcc;
 }
 
+/*! Check that it is possible to read out the correct APB2 clock speed when the HSI clock is used and
+ *  there is no division of neither AHB clock or APB2 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
+ *  when peripheralRcc is instantiated for USART1 (which uses APB2)
+ */
+TEST( ClockGenerator, GetApb2ClkWhenEqualToHsiClk )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
+    CHECK_EQUAL( 16000000U, rcc->getClockFrequencyInHz() );
+}
+
 int main( int ac, char** av )
 {
 	return CommandLineTestRunner::RunAllTests( ac, av );
