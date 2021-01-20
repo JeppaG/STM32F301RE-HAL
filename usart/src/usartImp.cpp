@@ -30,6 +30,7 @@ Usart1_2Imp::Usart1_2Imp( void* const    usartBaseAddress,
 {
 	rxPin->setToAlternateFunction( Gpio::AF07 );
 	txPin->setToAlternateFunction( Gpio::AF07 );
+	rcc->enableClock();
 }
 
 Usart1_2Imp::~Usart1_2Imp()

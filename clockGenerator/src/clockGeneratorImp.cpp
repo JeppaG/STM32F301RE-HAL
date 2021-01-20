@@ -50,6 +50,7 @@ PeripheralRccImp::~PeripheralRccImp()
 void PeripheralRccImp::enableClock()
 {
 	rcc->ahb1ClockEnable = 0x00000001;
+	rcc->apb2ClockEnable = 0x00000010;
 }
 
 ClockGenerator::~ClockGenerator()
