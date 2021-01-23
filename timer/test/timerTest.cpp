@@ -56,6 +56,14 @@ TEST_GROUP( SysTickTimer )
 		memcpy( &actualRegister, &resetRegister, sizeof( tickTimerRegisterType ) );
 	}
 
+	void vCheckRegisters()
+	{
+	    CHECK_EQUAL( expectedRegister.controlAndStatus, actualRegister.controlAndStatus );
+	    CHECK_EQUAL( expectedRegister.reloadValue     , actualRegister.reloadValue      );
+	    CHECK_EQUAL( expectedRegister.currentValue    , actualRegister.currentValue     );
+	    CHECK_EQUAL( expectedRegister.calibrationValue, actualRegister.calibrationValue );
+	}
+
 	void setup()
 	{
 		vInitializeTestRegistersToResetValues();
@@ -81,8 +89,7 @@ TEST( SysTickTimer, InstantiateWith16MHzHclkDiv8 )
 			                                           /* AHB_CLK rate in Hz   */      16000000,
 													   /* Clock selection      */      SysTickTimerImp::AHB_CLK_DIV_8 ) );
 
-	CHECK_EQUAL( expectedRegister.controlAndStatus, actualRegister.controlAndStatus );
-	CHECK_EQUAL( expectedRegister.reloadValue, actualRegister.reloadValue );
+	vCheckRegisters();
 
 	delete timer;
 }

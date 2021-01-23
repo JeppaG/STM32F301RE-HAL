@@ -71,6 +71,17 @@ TEST_GROUP( Usart  )
 		memcpy( &actualRegister, &resetRegister, sizeof( usartRegisterType ) );
 	}
 
+	void vCheckRegisters()
+	{
+	    CHECK_EQUAL( expectedRegister.status               , actualRegister.status                );
+	    CHECK_EQUAL( expectedRegister.data                 , actualRegister.data                  );
+	    CHECK_EQUAL( expectedRegister.baudRate             , actualRegister.baudRate              );
+	    CHECK_EQUAL( expectedRegister.control1             , actualRegister.control1              );
+	    CHECK_EQUAL( expectedRegister.control2             , actualRegister.control2              );
+	    CHECK_EQUAL( expectedRegister.control3             , actualRegister.control3              );
+	    CHECK_EQUAL( expectedRegister.guardTimeAndPrescaler, actualRegister.guardTimeAndPrescaler );
+	}
+
 	void setup()
 	{
 		vInitializeTestRegistersToResetValues();
@@ -104,12 +115,13 @@ TEST( Usart, InstantiateUsart1_2 )
     rccMock->expectEnableClock();
 	txPinMock->expectSetToAlternateFunction( Gpio::AF07 );
 	rxPinMock->expectSetToAlternateFunction( Gpio::AF07 );
+
 	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
 	                                              /* PeripheralRcc */      rcc,
 	                                              /* rxPin */			   rxPin,
 												  /* txPin */			   txPin ) );
 
-	CHECK_EQUAL( expectedRegister.status, actualRegister.status );
+	vCheckRegisters();
 
 	delete usart;
 }

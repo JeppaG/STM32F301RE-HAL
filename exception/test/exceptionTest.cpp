@@ -171,7 +171,85 @@ TEST_GROUP( Exception )
 
 		memcpy( &expectedTickTimerRegister, &resetRegister, sizeof( tickTimerRegisterType ) );
 		memcpy( &actualTickTimerRegister, &resetRegister, sizeof( tickTimerRegisterType ) );
-}
+	}
+
+	void vCheckNvicRegisters()
+	{
+        CHECK_EQUAL( setEnableExpected.interrupt0to31      , setEnableActual.interrupt0to31       );
+        CHECK_EQUAL( setEnableExpected.interrupt32to63     , setEnableActual.interrupt32to63      );
+        CHECK_EQUAL( setEnableExpected.interrupt64to95     , setEnableActual.interrupt64to95      );
+        CHECK_EQUAL( setEnableExpected.interrupt96to127    , setEnableActual.interrupt96to127     );
+        CHECK_EQUAL( setEnableExpected.interrupt128to159   , setEnableActual.interrupt128to159    );
+        CHECK_EQUAL( setEnableExpected.interrupt160to191   , setEnableActual.interrupt160to191    );
+        CHECK_EQUAL( setEnableExpected.interrupt192to223   , setEnableActual.interrupt192to223    );
+        CHECK_EQUAL( setEnableExpected.interrupt224to239   , setEnableActual.interrupt224to239    );
+        CHECK_EQUAL( clearEnableExpected.interrupt0to31    , clearEnableActual.interrupt0to31     );
+        CHECK_EQUAL( clearEnableExpected.interrupt32to63   , clearEnableActual.interrupt32to63    );
+        CHECK_EQUAL( clearEnableExpected.interrupt64to95   , clearEnableActual.interrupt64to95    );
+        CHECK_EQUAL( clearEnableExpected.interrupt96to127  , clearEnableActual.interrupt96to127   );
+        CHECK_EQUAL( clearEnableExpected.interrupt128to159 , clearEnableActual.interrupt128to159  );
+        CHECK_EQUAL( clearEnableExpected.interrupt160to191 , clearEnableActual.interrupt160to191  );
+        CHECK_EQUAL( clearEnableExpected.interrupt192to223 , clearEnableActual.interrupt192to223  );
+        CHECK_EQUAL( clearEnableExpected.interrupt224to239 , clearEnableActual.interrupt224to239  );
+        CHECK_EQUAL( setPendingExpected.interrupt0to31     , setPendingActual.interrupt0to31      );
+        CHECK_EQUAL( setPendingExpected.interrupt32to63    , setPendingActual.interrupt32to63     );
+        CHECK_EQUAL( setPendingExpected.interrupt64to95    , setPendingActual.interrupt64to95     );
+        CHECK_EQUAL( setPendingExpected.interrupt96to127   , setPendingActual.interrupt96to127    );
+        CHECK_EQUAL( setPendingExpected.interrupt128to159  , setPendingActual.interrupt128to159   );
+        CHECK_EQUAL( setPendingExpected.interrupt160to191  , setPendingActual.interrupt160to191   );
+        CHECK_EQUAL( setPendingExpected.interrupt192to223  , setPendingActual.interrupt192to223   );
+        CHECK_EQUAL( setPendingExpected.interrupt224to239  , setPendingActual.interrupt224to239   );
+        CHECK_EQUAL( clearPendingExpected.interrupt0to31   , clearPendingActual.interrupt0to31    );
+        CHECK_EQUAL( clearPendingExpected.interrupt32to63  , clearPendingActual.interrupt32to63   );
+        CHECK_EQUAL( clearPendingExpected.interrupt64to95  , clearPendingActual.interrupt64to95   );
+        CHECK_EQUAL( clearPendingExpected.interrupt96to127 , clearPendingActual.interrupt96to127  );
+        CHECK_EQUAL( clearPendingExpected.interrupt128to159, clearPendingActual.interrupt128to159 );
+        CHECK_EQUAL( clearPendingExpected.interrupt160to191, clearPendingActual.interrupt160to191 );
+        CHECK_EQUAL( clearPendingExpected.interrupt192to223, clearPendingActual.interrupt192to223 );
+        CHECK_EQUAL( clearPendingExpected.interrupt224to239, clearPendingActual.interrupt224to239 );
+        for ( int i = 0; i < 240; i++ )
+        {
+            CHECK_EQUAL( priorityExpected[i], priorityActual[i] );
+        }
+
+	}
+
+	void vCheckScbRegisters()
+	{
+	    CHECK_EQUAL( scbExpected.auxiliaryControl                   , scbActual.auxiliaryControl                    );
+	    CHECK_EQUAL( scbExpected.cpuId                              , scbActual.cpuId                               );
+	    CHECK_EQUAL( scbExpected.intrruptCtontrolAndState           , scbActual.intrruptCtontrolAndState            );
+	    CHECK_EQUAL( scbExpected.vectorTableOffset                  , scbActual.vectorTableOffset                   );
+	    CHECK_EQUAL( scbExpected.applicationInterruptAndResetControl, scbActual.applicationInterruptAndResetControl );
+	    CHECK_EQUAL( scbExpected.systemControl                      , scbActual.systemControl                       );
+	    CHECK_EQUAL( scbExpected.configurationAndControl            , scbActual.configurationAndControl             );
+	    CHECK_EQUAL( scbExpected.memoryManagementFaultPriority      , scbActual.memoryManagementFaultPriority       );
+	    CHECK_EQUAL( scbExpected.busFaultPriority                   , scbActual.busFaultPriority                    );
+	    CHECK_EQUAL( scbExpected.usageFaultPriority                 , scbActual.usageFaultPriority                  );
+	    CHECK_EQUAL( scbExpected.reserved1                          , scbActual.reserved1                           );
+	    CHECK_EQUAL( scbExpected.reserved2                          , scbActual.reserved2                           );
+	    CHECK_EQUAL( scbExpected.reserved3                          , scbActual.reserved3                           );
+	    CHECK_EQUAL( scbExpected.reserved4                          , scbActual.reserved4                           );
+	    CHECK_EQUAL( scbExpected.svCallPriority                     , scbActual.svCallPriority                      );
+	    CHECK_EQUAL( scbExpected.reserved5                          , scbActual.reserved5                           );
+	    CHECK_EQUAL( scbExpected.reserved6                          , scbActual.reserved6                           );
+	    CHECK_EQUAL( scbExpected.pendSvPriority                     , scbActual.pendSvPriority                      );
+	    CHECK_EQUAL( scbExpected.sysTickPriority                    , scbActual.sysTickPriority                     );
+	    CHECK_EQUAL( scbExpected.systemHandlerControlAndState       , scbActual.systemHandlerControlAndState        );
+	    CHECK_EQUAL( scbExpected.configurableFaultStatus            , scbActual.configurableFaultStatus             );
+	    CHECK_EQUAL( scbExpected.hardFaultStatus                    , scbActual.hardFaultStatus                     );
+	    CHECK_EQUAL( scbExpected.addressOfMemoryManagementFault     , scbActual.addressOfMemoryManagementFault      );
+	    CHECK_EQUAL( scbExpected.addressOfBusFault                  , scbActual.addressOfBusFault                   );
+	    CHECK_EQUAL( scbExpected.auxiliaryFaultStatus               , scbActual.auxiliaryFaultStatus                );
+	}
+
+	void vCheckTickTimerRegisters()
+	{
+	    CHECK_EQUAL( expectedTickTimerRegister.controlAndStatus, actualTickTimerRegister.controlAndStatus );
+	    CHECK_EQUAL( expectedTickTimerRegister.reloadValue     , actualTickTimerRegister.reloadValue      );
+	    CHECK_EQUAL( expectedTickTimerRegister.currentValue    , actualTickTimerRegister.currentValue     );
+	    CHECK_EQUAL( expectedTickTimerRegister.calibrationValue, actualTickTimerRegister.calibrationValue );
+	}
 
 	void setup()
 	{
@@ -195,7 +273,8 @@ TEST( Exception, initSysTickTimerPriority )
 
 	scbExpected.sysTickPriority = 255;
 	sysTickException->setPriority( 255 );
-	CHECK_EQUAL( scbExpected.sysTickPriority, scbActual.sysTickPriority );
+
+	vCheckScbRegisters();
 
 	delete sysTickException;
 }
@@ -211,7 +290,8 @@ TEST( Exception, initSysTickTimerEnable )
 
 	expectedTickTimerRegister.controlAndStatus = 0x00000002;
 	sysTickException->enable();
-	CHECK_EQUAL( expectedTickTimerRegister.controlAndStatus, actualTickTimerRegister.controlAndStatus );
+
+	vCheckTickTimerRegisters();
 
 	delete sysTickException;
 }
