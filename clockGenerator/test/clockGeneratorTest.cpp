@@ -254,7 +254,8 @@ TEST( ClockGenerator, GetApb2ClkWhenEqualToHsiClk )
 {
     peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
                                                                         /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
-    CHECK_EQUAL( 16000000U, rcc->getClockFrequencyInHz() );
+    CHECK_EQUAL( 16000000U, peripheralRcc->getClockFrequencyInHz() );
+delete peripheralRcc;
 }
 
 int main( int ac, char** av )

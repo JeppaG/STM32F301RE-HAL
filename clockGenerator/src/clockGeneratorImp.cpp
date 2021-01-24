@@ -38,19 +38,35 @@ ClockGeneratorHsiImp::~ClockGeneratorHsiImp()
 {
 }
 
-PeripheralRccImp::PeripheralRccImp( void* const rccBaseAddress, const PeripheralRccType peripheralRcc ) :
-rcc( reinterpret_cast<registerType* const>( rccBaseAddress ) )
+PeripheralRccImp::PeripheralRccImp( void* const rccBaseAddress, const peripheralType peripheralArg ) :
+rcc( reinterpret_cast<registerType* const>( rccBaseAddress ) ),
+peripheral( peripheralArg )
 {
 }
 
 PeripheralRccImp::~PeripheralRccImp()
 {
+
+}
+
+uint32_t PeripheralRccImp::getClockFrequencyInHz()
+{
+	return 16000000U;
 }
 
 void PeripheralRccImp::enableClock()
 {
-	rcc->ahb1ClockEnable = 0x00000001;
-	rcc->apb2ClockEnable = 0x00000010;
+	if ( peripheral == GPIOA )
+	{
+		rcc->ahb1ClockEnable = 0x00000001;
+	}
+	else if  ( peripheral == USART1 )
+	{
+		rcc->apb2ClockEnable = 0x00000010;
+	}
+	else
+	{
+	}
 }
 
 ClockGenerator::~ClockGenerator()
@@ -60,5 +76,6 @@ ClockGenerator::~ClockGenerator()
 
 PeripheralRcc::~PeripheralRcc()
 {
+
 	/* C++ demands that even a pure virtual destructor has an implementation */
 }
