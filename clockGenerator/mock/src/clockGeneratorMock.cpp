@@ -31,7 +31,9 @@ PeripheralRccMock::PeripheralRccMock()
 PeripheralRccMock::~PeripheralRccMock()
 {
 }
-
+uint32_t PeripheralRccMock::getClockFrequencyInHz()
+{
+}
 PeripheralRcc::~PeripheralRcc()
 {
     /* C++ demands that even a pure virtual destructor has an implementation */

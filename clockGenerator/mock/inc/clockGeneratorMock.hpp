@@ -43,6 +43,8 @@ public:
 
 	/* Test case helper functions */
 	void expectEnableClock();
+
+	uint32_t getClockFrequencyInHz();
 };
 
 #endif /* MOCK_INC_CLOCKGENERATORMOCK_HPP_ */
