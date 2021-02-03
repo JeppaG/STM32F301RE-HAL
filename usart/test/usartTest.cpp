@@ -105,16 +105,56 @@ TEST_GROUP( Usart  )
 		rxPin = nullptr;
 		txPin = nullptr;
 	}
+
+	uint32_t calculateUsartDiv( uint32_t phbClockInHz,
+	                            uint32_t requestedBaudRate,
+	                            bool     overSample16Times )
+	{
+	    uint32_t mantissa;
+	    uint32_t  fraction;
+	    uint32_t usartDiv;
+
+	    if ( overSample16Times )
+	    {
+	        mantissa = phbClockInHz / ( 16*requestedBaudRate );
+	        fraction = ( phbClockInHz % ( 16*requestedBaudRate ) )*16 ;
+            fraction += 15*requestedBaudRate;
+            fraction /= 16*requestedBaudRate;
+            usartDiv = mantissa*16 +  fraction;
+            printf("%X\n",usartDiv);
+	    }
+        return usartDiv;
+	}
+
+	Usart* pInstantiateUsart1_2()
+    {
+        mock().disable();
+        expectedRegister.baudRate = calculateUsartDiv( /* apbClockInHz */      16000000U,
+                                                       /* requestedBaudRate */ 115200,
+                                                       /* overSample16Times */ true );
+        Usart* pUsart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
+                                                              /* PeripheralRcc */      rcc,
+                                                              /* rxPin */              rxPin,
+                                                              /* txPin */              txPin ) );
+        mock().enable();
+        return pUsart;
+    }
 };
 
 /*! Check that when Usart1_2 is instantiated:
  *   - The peripheralClock for the selected USART is enabled
- *   - The Rx and Tx pins are set to alternate function AF07. */
+ *   - The Rx and Tx pins are set to alternate function AF07.
+ *   - The baudrate register is set so that the baudrate is as close
+ *     as possible to 115200 with 16000000 APB clock and 16 times oversampling */
 TEST( Usart, InstantiateUsart1_2 )
 {
     rccMock->expectEnableClock();
+    rccMock->expectGetClockFrequencyInHzAndReturn( /* clockFrequency */ 16000000U );
 	txPinMock->expectSetToAlternateFunction( Gpio::AF07 );
 	rxPinMock->expectSetToAlternateFunction( Gpio::AF07 );
+    expectedRegister.baudRate = calculateUsartDiv( /* apbClockInHz */      16000000U,
+                                                   /* requestedBaudRate */ 115200,
+                                                   /* overSample16Times */ true );
 
 	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
 	                                              /* PeripheralRcc */      rcc,
@@ -126,6 +166,24 @@ TEST( Usart, InstantiateUsart1_2 )
 	delete usart;
 }
 
+/*! Check that when the correct data is written to the baudrate register
+ *  of Usart1_2 when the baudrate is set to 115200
+ *  with 16000000 MHz clock and 16 times oversampling */
+TEST( Usart, SetBaud115200ApbClk16OvSample16 )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.baudRate = 0;
+    expectedRegister.baudRate = calculateUsartDiv( /* apbClockInHz */      16000000U,
+                                                   /* requestedBaudRate */ 115200,
+                                                   /* overSample16Times */ true );
+    vCheckRegisters();
+
+    delete usart;
+}
+/*! Check that when the baudrate is set on USART1_2, and the peripheral is 16 Mhz
+ *   - The
+ *   - The Rx and Tx pins are set to alternate function AF07. */
 //TEST ( Usart, WriteToUsart1 )
 //{
 //	expectedRegister.data=0x00000041; //expect to set usart1 to "a"

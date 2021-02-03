@@ -40,11 +40,15 @@ public:
 
 	/* Mocked functions */
 	void enableClock();
+	uint32_t getClockFrequencyInHz();
 
 	/* Test case helper functions */
-	void expectEnableClock();
+    void expectEnableClock();
+    void expectGetClockFrequencyInHzAndReturn( uint32_t clockFrequency );
 
-	uint32_t getClockFrequencyInHz();
+
+private:
+	uint32_t clockFrequencyInHz;
 };
 
 #endif /* MOCK_INC_CLOCKGENERATORMOCK_HPP_ */
