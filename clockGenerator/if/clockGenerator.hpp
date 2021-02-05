@@ -26,6 +26,8 @@
 #ifndef CLOCKGENERATOR_IF_CLOCKGENERATOR_HPP_
 #define CLOCKGENERATOR_IF_CLOCKGENERATOR_HPP_
 
+#include <cstdint>
+
 class ClockGenerator
 {
 public:
