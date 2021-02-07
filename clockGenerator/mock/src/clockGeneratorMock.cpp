@@ -24,7 +24,8 @@
 #include "CppUTestExt/MockSupport.h"
 #include "clockGeneratorMock.hpp"
 
-PeripheralRccMock::PeripheralRccMock()
+PeripheralRccMock::PeripheralRccMock():
+    clockFrequencyInHz ( 16000000U )
 {
 }
 
@@ -43,8 +44,22 @@ void PeripheralRccMock::enableClock()
 		  .onObject( this );
 }
 
+uint32_t PeripheralRccMock::getClockFrequencyInHz()
+{
+    mock().actualCall( "getClockFrequencyInHz" )
+          .onObject( this );
+    return clockFrequencyInHz;
+}
+
 void PeripheralRccMock::expectEnableClock()
 {
     mock().expectOneCall( "enableClock" )
           .onObject( this );
+}
+
+void PeripheralRccMock::expectGetClockFrequencyInHzAndReturn( uint32_t clockFrequency )
+{
+    mock().expectOneCall( "getClockFrequencyInHz" )
+          .onObject( this );
+    clockFrequencyInHz = clockFrequency;
 }

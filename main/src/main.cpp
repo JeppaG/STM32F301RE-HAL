@@ -19,7 +19,6 @@
  *  Created on: 4 Jun 2020
  *      Author: jeppa
  */
-
 #include "main.hpp"
 #include "sysTick.hpp"
 

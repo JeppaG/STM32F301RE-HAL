@@ -112,6 +112,21 @@ TEST_GROUP( Gpio )
 		memcpy( &actualRegister, &resetRegister, sizeof( gpioRegisterType ) );
 	}
 
+	void vCheckRegisters()
+	{
+        CHECK_EQUAL( expectedRegister.mode                 , actualRegister.mode                  );
+        CHECK_EQUAL( expectedRegister.outputType           , actualRegister.outputType            );
+        CHECK_EQUAL( expectedRegister.outputSpeed          , actualRegister.outputSpeed           );
+        CHECK_EQUAL( expectedRegister.pullUpDown           , actualRegister.pullUpDown            );
+        CHECK_EQUAL( expectedRegister.inputData            , actualRegister.inputData             );
+        CHECK_EQUAL( expectedRegister.outputData           , actualRegister.outputData            );
+        CHECK_EQUAL( expectedRegister.bitSetReset          , actualRegister.bitSetReset           );
+        CHECK_EQUAL( expectedRegister.configurationLock    , actualRegister.configurationLock     );
+        CHECK_EQUAL( expectedRegister.alternateFunctionLow , actualRegister.alternateFunctionLow  );
+        CHECK_EQUAL( expectedRegister.alternateFunctionHigh, actualRegister.alternateFunctionHigh );
+
+	}
+
 	Gpio* instantiateGpioA( uint32_t pin)
 	{
 	    mock().disable();
@@ -162,9 +177,10 @@ TEST( Gpio, SetGpioA5ToDigitalOutput )
 
     expectedRegister.mode = 0x0C000400;
     expectedRegister.bitSetReset = 0x00200000;
+
     gpioA5->setToDigitalOutput();
-    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
-    CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
+
+    vCheckRegisters();
 
     delete gpioA5;
 }
@@ -177,11 +193,13 @@ TEST( Gpio, SetGpio5 )
 {
     Gpio* gpioA5 = instantiateGpioA( /* pinNumber */ Gpio::pin5);
     gpioA5->setToDigitalOutput();
-
 	actualRegister.bitSetReset = 0x00000000;
+    expectedRegister.mode = 0x0C000400;
 	expectedRegister.bitSetReset = 0x00000020;
+
 	gpioA5->set();
-	CHECK_EQUAL( expectedRegister.bitSetReset, actualRegister.bitSetReset );
+
+	vCheckRegisters();
 
 	delete gpioA5;
 }
@@ -196,9 +214,10 @@ TEST( Gpio, SetGpioA9AsAf7 )
 
     expectedRegister.mode = 0x0C080000;
     expectedRegister.alternateFunctionHigh = 0x00000070;
+
     gpioA9->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
-    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
-    CHECK_EQUAL( expectedRegister.alternateFunctionHigh, actualRegister.alternateFunctionHigh );
+
+    vCheckRegisters();
 
 	delete gpioA9;
 }
@@ -213,9 +232,10 @@ TEST( Gpio, SetGpioA10AsAf7 )
 
     expectedRegister.mode = 0x0C200000;
     expectedRegister.alternateFunctionHigh = 0x00000070;
+
     gpioA10->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
-    CHECK_EQUAL( expectedRegister.mode, actualRegister.mode );
-    CHECK_EQUAL( expectedRegister.alternateFunctionHigh, actualRegister.alternateFunctionHigh );
+
+    vCheckRegisters();
 
     delete gpioA10;
 }

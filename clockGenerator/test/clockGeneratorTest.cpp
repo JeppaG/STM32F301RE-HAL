@@ -118,6 +118,44 @@ TEST_GROUP( ClockGenerator)
 		memcpy( &actualRegister, &resetRegister, sizeof( clockRegisterType ) );
 	}
 
+	void vCheckRegisters ()
+	{
+        CHECK_EQUAL( expectedRegister.clockControl                  , actualRegister.clockControl                  );
+        CHECK_EQUAL( expectedRegister.pllConfiguration              , actualRegister.pllConfiguration              );
+        CHECK_EQUAL( expectedRegister.clockConfiguration            , actualRegister.clockConfiguration            );
+        CHECK_EQUAL( expectedRegister.interrupt                     , actualRegister.interrupt                     );
+        CHECK_EQUAL( expectedRegister.ahb1PeripheralReset           , actualRegister.ahb1PeripheralReset           );
+        CHECK_EQUAL( expectedRegister.ahb2PeripheralReset           , actualRegister.ahb2PeripheralReset           );
+        CHECK_EQUAL( expectedRegister.notUsed1                      , actualRegister.notUsed1                      );
+        CHECK_EQUAL( expectedRegister.notUsed2                      , actualRegister.notUsed2                      );
+        CHECK_EQUAL( expectedRegister.apb1PeripheralReset           , actualRegister.apb1PeripheralReset           );
+        CHECK_EQUAL( expectedRegister.apb2PeripheralReset           , actualRegister.apb2PeripheralReset           );
+        CHECK_EQUAL( expectedRegister.notUsed3                      , actualRegister.notUsed3                      );
+        CHECK_EQUAL( expectedRegister.notUsed4                      , actualRegister.notUsed4                      );
+        CHECK_EQUAL( expectedRegister.ahb1ClockEnable               , actualRegister.ahb1ClockEnable               );
+        CHECK_EQUAL( expectedRegister.ahb2ClockEnable               , actualRegister.ahb2ClockEnable               );
+        CHECK_EQUAL( expectedRegister.notUsed5                      , actualRegister.notUsed5                      );
+        CHECK_EQUAL( expectedRegister.notUsed6                      , actualRegister.notUsed6                      );
+        CHECK_EQUAL( expectedRegister.apb1ClockEnable               , actualRegister.apb1ClockEnable               );
+        CHECK_EQUAL( expectedRegister.apb2ClockEnable               , actualRegister.apb2ClockEnable               );
+        CHECK_EQUAL( expectedRegister.notUsed7                      , actualRegister.notUsed7                      );
+        CHECK_EQUAL( expectedRegister.notUsed8                      , actualRegister.notUsed8                      );
+        CHECK_EQUAL( expectedRegister.ahb1LowPowerClockEnable       , actualRegister.ahb1LowPowerClockEnable       );
+        CHECK_EQUAL( expectedRegister.ahb2LowPowerClockEnable       , actualRegister.ahb2LowPowerClockEnable       );
+        CHECK_EQUAL( expectedRegister.notUsed9                      , actualRegister.notUsed9                      );
+        CHECK_EQUAL( expectedRegister.notUsed10                     , actualRegister.notUsed10                     );
+        CHECK_EQUAL( expectedRegister.apb1LowPowerClockEnable       , actualRegister.apb1LowPowerClockEnable       );
+        CHECK_EQUAL( expectedRegister.apb2LowPowerClockEnable       , actualRegister.apb2LowPowerClockEnable       );
+        CHECK_EQUAL( expectedRegister.notUsed11                     , actualRegister.notUsed11                     );
+        CHECK_EQUAL( expectedRegister.notUsed12                     , actualRegister.notUsed12                     );
+        CHECK_EQUAL( expectedRegister.backupDomainControl           , actualRegister.backupDomainControl           );
+        CHECK_EQUAL( expectedRegister.controlAndStatus              , actualRegister.controlAndStatus              );
+        CHECK_EQUAL( expectedRegister.notUsed13                     , actualRegister.notUsed13                     );
+        CHECK_EQUAL( expectedRegister.notUsed14                     , actualRegister.notUsed14                     );
+        CHECK_EQUAL( expectedRegister.spreadSpectrumClockGeneration , actualRegister.spreadSpectrumClockGeneration );
+        CHECK_EQUAL( expectedRegister.pllI2sControl                 , actualRegister.pllI2sControl                 );
+        CHECK_EQUAL( expectedRegister.dedicatedClocksConfiguration  , actualRegister.dedicatedClocksConfiguration  );
+	}
 	void setup()
 	{
 		vInitializeTestRegistersToResetValues();
@@ -137,7 +175,7 @@ TEST( ClockGenerator, InstantiateHsi )
 {
 	clockGenerator = dynamic_cast<ClockGenerator*>( new ClockGeneratorHsiImp( /* RCC Base address */ &actualRegister ) );
 
-	CHECK_EQUAL( expectedRegister.clockControl, actualRegister.clockControl );
+	vCheckRegisters();
 
 	delete clockGenerator;
 }
@@ -154,7 +192,7 @@ TEST( ClockGenerator, InstantiateHsiHsiRdyFlagNotSet )
 
 	clockGenerator = dynamic_cast<ClockGenerator*>( new ClockGeneratorHsiImp( /* RCC Base address */ &actualRegister ) );
 
-	CHECK_EQUAL( expectedRegister.clockControl, actualRegister.clockControl );
+	vCheckRegisters();
 
 	delete clockGenerator;
 }
@@ -185,9 +223,39 @@ TEST( ClockGenerator, EnableGpioA )
 
 	peripheralRcc->enableClock();
 
-    CHECK_EQUAL( expectedRegister.ahb1ClockEnable, actualRegister.ahb1ClockEnable );
+	vCheckRegisters();
 
     delete peripheralRcc;
+}
+
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  GPIOA, the PIOA Clock Enable bit in the AHB1ClockEnable register is set
+ */
+TEST( ClockGenerator, EnableUsart1 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
+    CHECK_EQUAL( expectedRegister.apb2ClockEnable, actualRegister.apb2ClockEnable );
+
+    expectedRegister.apb2ClockEnable |= 0x00000010; /* USART1 ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+}
+
+/*! Check that it is possible to read out the correct APB2 clock speed when the HSI clock is used and
+ *  there is no division of neither AHB clock or APB2 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
+ *  when peripheralRcc is instantiated for USART1 (which uses APB2)
+ */
+TEST( ClockGenerator, GetApb2ClkWhenEqualToHsiClk )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
+    CHECK_EQUAL( 16000000U, peripheralRcc->getClockFrequencyInHz() );
+delete peripheralRcc;
 }
 
 int main( int ac, char** av )

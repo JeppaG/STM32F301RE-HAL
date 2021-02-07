@@ -26,6 +26,8 @@
 #ifndef CLOCKGENERATOR_IF_CLOCKGENERATOR_HPP_
 #define CLOCKGENERATOR_IF_CLOCKGENERATOR_HPP_
 
+#include <cstdint>
+
 class ClockGenerator
 {
 public:
@@ -37,5 +39,6 @@ class PeripheralRcc
 public:
 	virtual void enableClock() = 0;
 	virtual ~PeripheralRcc() = 0;
+	virtual uint32_t getClockFrequencyInHz() = 0;
 };
 #endif /* CLOCKGENERATOR_IF_CLOCKGENERATOR_HPP_ */

@@ -72,11 +72,6 @@ public:
 
 	} registerType;
 
-	typedef enum
-	{
-		GPIOA
-	} PeripheralRccType;
-
 	~ClockGeneratorCommonImp();
 
 };
@@ -95,14 +90,23 @@ private:
 class PeripheralRccImp : public ClockGeneratorCommonImp, public PeripheralRcc
 {
 public:
-	PeripheralRccImp( void* const rccBaseAddress, const PeripheralRccType peripheralRcc );
+	typedef enum
+	{
+		GPIOA,
+		USART1
+	} peripheralType;
+
+	PeripheralRccImp( void* const rccBaseAddress, const peripheralType peripheralArg );
 
 	~PeripheralRccImp();
 
 	void enableClock();
 
+	uint32_t getClockFrequencyInHz();
+
 private:
 	registerType* const rcc;
+	peripheralType const peripheral;
 };
 
 #endif /* CLOCKGENERATOR_IMP_CLOCKGENERATORIMP_HPP_ */

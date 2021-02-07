@@ -23,11 +23,17 @@
 
 #include "usartImp.hpp"
 
-UsartImp::UsartImp( void* const usartBaseAddress )
+Usart1_2Imp::Usart1_2Imp( void* const    usartBaseAddress,
+                          PeripheralRcc* rcc,
+						  Gpio*		     rxPin,
+						  Gpio*		     txPin )
 {
+	rxPin->setToAlternateFunction( Gpio::AF07 );
+	txPin->setToAlternateFunction( Gpio::AF07 );
+	rcc->enableClock();
 }
 
-UsartImp::~UsartImp()
+Usart1_2Imp::~Usart1_2Imp()
 {
 }
 
