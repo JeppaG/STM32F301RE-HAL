@@ -177,6 +177,9 @@ TEST( Usart, SetBaud115200ApbClk16OvSample16 )
     expectedRegister.baudRate = calculateUsartDiv( /* apbClockInHz */      16000000U,
                                                    /* requestedBaudRate */ 115200,
                                                    /* overSample16Times */ true );
+    rccMock->expectGetClockFrequencyInHzAndReturn( /* clockFrequency */ 16000000U );
+
+    usart->setBaudRate( 115200 );
     vCheckRegisters();
 
     delete usart;

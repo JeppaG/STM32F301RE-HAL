@@ -23,6 +23,7 @@ UNITS := \
     exception \
     gpio \
     timer \
+    usart \
     
 TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
 
