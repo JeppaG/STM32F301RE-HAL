@@ -45,12 +45,18 @@ public:
         volatile uint32_t guardTimeAndPrescaler; /* Base address + 0x18 */
     } registerType;
 
-    Usart1_2Imp( void* const    usartBaseAddress,
-                 PeripheralRcc* rcc,
-    			 Gpio*		    rxPin,
-				 Gpio*		    txPin );
+    Usart1_2Imp( void* const          usartBaseAddress,
+                 PeripheralRcc* const pRcc,
+    			 Gpio*		          rxPin,
+				 Gpio*		          txPin );
+
+    virtual void setBaudRate( uint32_t baudRate );
 
 	~Usart1_2Imp();
+
+private:
+	registerType* const  usart;
+	PeripheralRcc* const rcc;
 };
 
 

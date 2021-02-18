@@ -23,14 +23,24 @@
 
 #include "usartImp.hpp"
 
-Usart1_2Imp::Usart1_2Imp( void* const    usartBaseAddress,
-                          PeripheralRcc* rcc,
-						  Gpio*		     rxPin,
-						  Gpio*		     txPin )
+Usart1_2Imp::Usart1_2Imp( void* const          usartBaseAddress,
+                          PeripheralRcc* const pRcc,
+						  Gpio*		           rxPin,
+						  Gpio*		           txPin ):
+    usart( static_cast<registerType* const>( usartBaseAddress ) ),
+    rcc  ( pRcc )
 {
 	rxPin->setToAlternateFunction( Gpio::AF07 );
 	txPin->setToAlternateFunction( Gpio::AF07 );
 	rcc->enableClock();
+	rcc->getClockFrequencyInHz();
+	usart->baudRate = 139U;
+}
+
+void Usart1_2Imp::setBaudRate( uint32_t baudRate )
+{
+    rcc->getClockFrequencyInHz();
+    usart->baudRate = 139;
 }
 
 Usart1_2Imp::~Usart1_2Imp()
