@@ -43,6 +43,16 @@ void Usart1_2Imp::setBaudRate( uint32_t baudRate )
     usart->baudRate = 139;
 }
 
+void Usart1_2Imp::enable()
+{
+    usart->control1 = 0x0000200C;
+}
+
+void Usart1_2Imp::write( const uint8_t data )
+{
+    usart->data = data;
+}
+
 Usart1_2Imp::~Usart1_2Imp()
 {
 }

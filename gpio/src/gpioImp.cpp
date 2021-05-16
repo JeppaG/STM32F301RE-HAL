@@ -53,7 +53,14 @@ void GpioImp::clear()
 void GpioImp::setToAlternateFunction( const uint32_t alternateFunction )
 {
     gpio->mode |= pin*pin*2;
-    gpio->alternateFunctionHigh |= 0x00000070;
+    if ( pin9 == pin )
+    {
+        gpio->alternateFunctionHigh |= 0x00000070;
+    }
+    else if ( pin10 == pin )
+    {
+        gpio->alternateFunctionHigh |= 0x00000700;
+    }
 }
 
 GpioImp::~GpioImp()

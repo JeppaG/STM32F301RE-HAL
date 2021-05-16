@@ -231,7 +231,7 @@ TEST( Gpio, SetGpioA10AsAf7 )
     Gpio* gpioA10 = instantiateGpioA( /* pinNumber */ Gpio::pin10 );
 
     expectedRegister.mode = 0x0C200000;
-    expectedRegister.alternateFunctionHigh = 0x00000070;
+    expectedRegister.alternateFunctionHigh = 0x00000700;
 
     gpioA10->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
 

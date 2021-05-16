@@ -121,7 +121,7 @@ TEST_GROUP( Usart  )
             fraction += 15*requestedBaudRate;
             fraction /= 16*requestedBaudRate;
             usartDiv = mantissa*16 +  fraction;
-            printf("%X\n",usartDiv);
+//            printf("%X\n",usartDiv);
 	    }
         return usartDiv;
 	}

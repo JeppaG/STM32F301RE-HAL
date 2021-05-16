@@ -23,6 +23,7 @@ local_used_if := \
   clockGenerator \
   gpio \
   timer \
+  usart \
 
 local_used_imp := \
   $(local_used_if) \

@@ -30,6 +30,8 @@ class Usart
 {
 public:
     virtual void setBaudRate( uint32_t baudRate ) = 0;
+    virtual void enable() = 0;
+    virtual void write( const uint8_t data ) = 0;
 	virtual ~Usart() = 0;
 };
 #endif /* USART_IF_USART_HPP_ */

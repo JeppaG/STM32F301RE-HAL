@@ -28,11 +28,13 @@
 #include "sysTickTimerImp.hpp"
 #include "gpioImp.hpp"
 #include "exceptionImp.hpp"
+#include "usartImp.hpp"
 
 void* const scbBaseAddress = reinterpret_cast<void*>( 0xE000ED00 );
 void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
 void* const sysTickTimerBaseAddress = reinterpret_cast<void*>( 0xE000E010 );
 void* const gpioABaseAddress = reinterpret_cast<void*>( 0x40020000 );
+void* const usart1BaseAddress = reinterpret_cast<void*>( 0x40011000 );
 
 ClockGeneratorHsiImp clockGeneratorImp( /* RCC Base Address */ rccBaseAddress );
 ClockGenerator* clockGenerator = static_cast<ClockGenerator*>( &clockGeneratorImp );
@@ -48,12 +50,30 @@ Exception* sysTickException = static_cast<Exception*>( &sysTickHandlerImp );
 
 PeripheralRccImp gpioARccImp( /* rccBaseAddress */ rccBaseAddress,
 		                      /* peripheralRcc  */ PeripheralRccImp::GPIOA );
+PeripheralRccImp usart1RccImp( /* rccBaseAddress */ rccBaseAddress,
+                               /* peripheralRcc  */ PeripheralRccImp::USART1 );
 PeripheralRcc* gpioARcc = static_cast<PeripheralRcc*>( &gpioARccImp );
+PeripheralRcc* usart1Rcc = static_cast<PeripheralRcc*>( &usart1RccImp );
 
 GpioImp greenLedImp( /* gpioBaseAddress */ gpioABaseAddress,
 					 /* peripheralRcc   */ gpioARcc,
 					 /* pin             */ GpioImp::pin5 );
 Gpio* greenLed = static_cast<Gpio*>( &greenLedImp );
+
+GpioImp usart1TxImp( /* gpioBaseAddress */ gpioABaseAddress,
+                     /* peripheralRcc   */ gpioARcc,
+                     /* pin             */ GpioImp::pin9 );
+GpioImp usart1RxImp( /* gpioBaseAddress */ gpioABaseAddress,
+                     /* peripheralRcc   */ gpioARcc,
+                     /* pin             */ GpioImp::pin10 );
+Gpio* usart1Tx = static_cast<Gpio*>( &usart1TxImp );
+Gpio* usart1Rx = static_cast<Gpio*>( &usart1RxImp );
+
+Usart1_2Imp usart1Imp( /* usartBaseAddress */ usart1BaseAddress,
+                       /* peripheralRcc    */ usart1Rcc,
+                       /* rxPin            */ usart1Rx,
+                       /* txPin            */ usart1Tx );
+Usart* usart1 = static_cast<Usart*>( &usart1Imp );
 
 void Main::main()
 {
@@ -65,6 +85,7 @@ void Main::main()
 	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
+	usart1->enable();
 	Exception::enableGlobal();
 	while ( true )
 	{
@@ -82,10 +103,12 @@ void SysTick::handler()
         if ( ledIsOn )
         {
             greenLed->clear();
+            usart1->write( 0xAA );
         }
         else
         {
             greenLed->set();
+            usart1->write( 0x55 );
         }
         ledIsOn = !ledIsOn;
         count = 1000;
