@@ -121,7 +121,7 @@ TEST_GROUP( Usart  )
             fraction += 15*requestedBaudRate;
             fraction /= 16*requestedBaudRate;
             usartDiv = mantissa*16 +  fraction;
-            printf("%X\n",usartDiv);
+//            printf("%X\n",usartDiv);
 	    }
         return usartDiv;
 	}
@@ -184,21 +184,35 @@ TEST( Usart, SetBaud115200ApbClk16OvSample16 )
 
     delete usart;
 }
-/*! Check that when the baudrate is set on USART1_2, and the peripheral is 16 Mhz
- *   - The
- *   - The Rx and Tx pins are set to alternate function AF07. */
-//TEST ( Usart, WriteToUsart1 )
-//{
-//	expectedRegister.data=0x00000041; //expect to set usart1 to "a"
-//	usart = static_cast<Usart*>( new Usart1_2Imp( /* Usart Base address */ &actualRegister,
-//												  /* rxPin */			   rxPin,
-//												  /* txPin */			   txPin ) );
-//	//data = write
-//	usart->write('a');
-//	CHECK_EQUAL( expectedRegister.data, actualRegister.data );
-//	delete usart;
-//}
 
+/*! Check that when the USART is enabled
+ *   - The UE bit, bit 13 in CR1 is set
+ *   - The TE bit, bit 3 in CR1 is set
+ *   - The RE bit, bit 2 in CR1 is set. */
+TEST ( Usart, EnableUsart )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control1 = 0x0000200C;
+    usart->enable();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when a char is written to the USART, it is put in the data register */
+TEST ( Usart, WriteChar )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.data = 0x000000AB;
+    usart->write( /* const uint8_t data */ 0xAB );
+
+    vCheckRegisters();
+
+    delete usart;
+}
 
 int main( int ac, char** av )
 {

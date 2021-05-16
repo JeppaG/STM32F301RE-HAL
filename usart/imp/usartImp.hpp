@@ -50,7 +50,9 @@ public:
     			 Gpio*		          rxPin,
 				 Gpio*		          txPin );
 
-    virtual void setBaudRate( uint32_t baudRate );
+    virtual void setBaudRate( uint32_t baudRate ) override;
+    virtual void enable() override;
+    virtual void write( const uint8_t data ) override;
 
 	~Usart1_2Imp();
 

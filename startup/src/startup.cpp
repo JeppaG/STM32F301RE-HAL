@@ -34,15 +34,15 @@
 
 /* Imported symbols from the linker script */
 
-extern uintptr_t __text_end__;
-extern uintptr_t __data_start__;
-extern uintptr_t __data_end__;
-extern uintptr_t __bss_start__;
-extern uintptr_t __bss_end__;
-extern uintptr_t __ctors_start__;
-extern uintptr_t __ctors_end__;
-extern uintptr_t _HEAP_START;
-extern uintptr_t _HEAP_END;
+extern uint8_t __text_end__;
+extern uint8_t __data_start__;
+extern uint8_t __data_end__;
+extern uint8_t __bss_start__;
+extern uint8_t __bss_end__;
+extern uint8_t __ctors_start__;
+extern uint8_t __ctors_end__;
+extern uint8_t _HEAP_START;
+extern uint8_t _HEAP_END;
 
 
 void Startup::lowLevelInit()
@@ -54,7 +54,6 @@ void Startup::lowLevelInit()
 	memcpy( reinterpret_cast<void*>( &__data_start__ ),
 		    reinterpret_cast<const void*>( &__text_end__ ),
 		    &__data_end__ - &__data_start__ );
-
 
 	/* Initialize data in the '.bss' section to zeros.
 	 */

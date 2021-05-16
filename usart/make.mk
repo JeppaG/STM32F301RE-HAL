@@ -19,6 +19,7 @@ local_dir := $(PROJ_ROOT)/usart
 
 local_used_if := \
   gpio \
+  clockGenerator \
 
 local_used_imp := \
 
