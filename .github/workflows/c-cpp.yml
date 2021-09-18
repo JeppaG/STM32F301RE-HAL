@@ -3,10 +3,7 @@ name: C/C++ CI
 on:
   push:
     branches: [ master ]
-      runs-on: self-hosted
 
-      steps:
-      - run: make run
   pull_request:
     branches: [ master ]
 
