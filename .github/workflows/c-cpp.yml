@@ -26,7 +26,5 @@ jobs:
       run: make
       working-directory: ./cpputest/cpputest_build
     - name: CppuTest on host
-      run:  make all
-    - name: upload to board
-      run: arminarm -f /home/ubuntu/actions-runner/_work/STM32F301RE-HAL/STM32F301RE-HAL/usart/test/test.exe
+      run:  make run
       working-directory: ./testCommon
