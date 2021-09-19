@@ -3,6 +3,10 @@ name: C/C++ CI
 on:
   push:
     branches: [ master ]
+
+  pull_request:
+    branches: [ master ]
+
 jobs:
   build:
 
@@ -24,7 +28,3 @@ jobs:
     - name: CppuTest on host
       run:  make run
       working-directory: ./testCommon
-
-  pull_request:
-    branches: [ master ]
-
