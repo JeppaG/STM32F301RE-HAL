@@ -49,7 +49,7 @@ void Startup::lowLevelInit()
 {
 	/* Copy data belonging to the '.data' section from its
 	 * load time position on flash (ROM) to its run time position
-	 * in SRAM
+	 * in SRAM.
 	 */
 	memcpy( reinterpret_cast<void*>( &__data_start__ ),
 		    reinterpret_cast<const void*>( &__text_end__ ),
