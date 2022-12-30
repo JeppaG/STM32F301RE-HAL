@@ -28,3 +28,5 @@ jobs:
     - name: CppuTest on host
       run:  make run
       working-directory: ./testCommon
+    - name: Build for target
+      run: make
