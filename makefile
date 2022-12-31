@@ -15,7 +15,9 @@
 #
 #****************************************************************************
 
-TOOL_PATH = ../../opt/xPacks/@xpack-dev-tools/arm-none-eabi-gcc/9.2.1-1.1.1/.content/bin
+# The script requires that the environment variable GNU_ARM_TOOL_PATH is defined and points to the 
+# directory where the build tools are found.
+TOOL_PATH = $(GNU_ARM_TOOL_PATH)/bin
 PROJ_ROOT = .
 BUILD_PATH = build
 OBJ_PATH = obj
@@ -26,7 +28,7 @@ LD = $(TOOL_PATH)/arm-none-eabi-g++
 G++_FLAGS = -O0 -c -g -march=armv7e-m -mcpu=cortex-m4 -mthumb -xc++ -std=gnu++14 -MMD -MP \
             -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-LD_FLAGS = -Tstm32f401RE.ld -march=armv7e-m -mcpu=cortex-m4 -mthumb -fno-exceptions --specs=nosys.specs \
+LD_FLAGS = -Tstm32f410RB.ld -march=armv7e-m -mcpu=cortex-m4 -mthumb -fno-exceptions --specs=nosys.specs \
            -nostartfiles -fno-unwind-tables -fno-rtti -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 \
            -fsigned-char -ffunction-sections -fdata-sections -ffreestanding --specs=nano.specs \
            -fno-move-loop-invariants -Xlinker
