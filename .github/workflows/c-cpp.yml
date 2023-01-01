@@ -30,3 +30,9 @@ jobs:
       working-directory: ./testCommon
     - name: Build for target
       run: make
+    - name: Copy to HEX
+      run: $GNU_ARM_TOOL_PATH/bin/arm-none-eabi-objcopy -Oihex main.elf main.hex
+      working-directory: ./build
+    - name: Program target
+      run: $OPEN_OCD_PATH/bin/openocd -f $OPENOCD_PATH/scripts/board/st_nucleo_f4.cfg -c "init; reset halt; flash write_image erase main.hex; reset run; exit"
+      working-directory: ./build
