@@ -229,7 +229,7 @@ TEST( ClockGenerator, EnableGpioA )
 }
 
 /*! Check that when an instance of peripheralClockControl is used to enable the clock for
- *  GPIOA, the PIOA Clock Enable bit in the AHB1ClockEnable register is set
+ *  USART1, the USART1 Clock Enable bit in the APB2ClockEnable register is set
  */
 TEST( ClockGenerator, EnableUsart1 )
 {
@@ -246,6 +246,36 @@ TEST( ClockGenerator, EnableUsart1 )
     delete peripheralRcc;
 }
 
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  USART2, the USART2 Clock Enable bit in the APB1ClockEnable register is set
+ */
+TEST( ClockGenerator, EnableUsart2 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART2 ) );
+    CHECK_EQUAL( expectedRegister.apb1ClockEnable, actualRegister.apb1ClockEnable );
+
+    expectedRegister.apb1ClockEnable |= 0x00020000; /* USART2 ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+}
+
+/*! Check that it is possible to read out the correct APB1 clock speed when the HSI clock is used and
+ *  there is no division of neither AHB clock or APB1 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
+ *  when peripheralRcc is instantiated for USART2 (which uses APB1)
+ */
+TEST( ClockGenerator, GetApb1ClkWhenEqualToHsiClk )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::USART2 ) );
+    CHECK_EQUAL( 16000000U, peripheralRcc->getClockFrequencyInHz() );
+    delete peripheralRcc;
+}
+
 /*! Check that it is possible to read out the correct APB2 clock speed when the HSI clock is used and
  *  there is no division of neither AHB clock or APB2 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
  *  when peripheralRcc is instantiated for USART1 (which uses APB2)
@@ -255,7 +285,7 @@ TEST( ClockGenerator, GetApb2ClkWhenEqualToHsiClk )
     peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
                                                                         /* Peripheral Rcc */   PeripheralRccImp::USART1 ) );
     CHECK_EQUAL( 16000000U, peripheralRcc->getClockFrequencyInHz() );
-delete peripheralRcc;
+    delete peripheralRcc;
 }
 
 int main( int ac, char** av )

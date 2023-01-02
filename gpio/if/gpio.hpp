@@ -29,6 +29,8 @@
 class Gpio
 {
 public:
+    static constexpr uint32_t pin2  = 0x00000004;
+    static constexpr uint32_t pin3  = 0x00000008;
 	static constexpr uint32_t pin5  = 0x00000020;
 	static constexpr uint32_t pin9  = 0x00000200;
 	static constexpr uint32_t pin10 = 0x00000400;

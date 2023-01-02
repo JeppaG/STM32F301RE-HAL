@@ -35,6 +35,7 @@ void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
 void* const sysTickTimerBaseAddress = reinterpret_cast<void*>( 0xE000E010 );
 void* const gpioABaseAddress = reinterpret_cast<void*>( 0x40020000 );
 void* const usart1BaseAddress = reinterpret_cast<void*>( 0x40011000 );
+void* const usart2BaseAddress = reinterpret_cast<void*>( 0x40004400 );
 
 ClockGeneratorHsiImp clockGeneratorImp( /* RCC Base Address */ rccBaseAddress );
 ClockGenerator* clockGenerator = static_cast<ClockGenerator*>( &clockGeneratorImp );
@@ -52,8 +53,11 @@ PeripheralRccImp gpioARccImp( /* rccBaseAddress */ rccBaseAddress,
 		                      /* peripheralRcc  */ PeripheralRccImp::GPIOA );
 PeripheralRccImp usart1RccImp( /* rccBaseAddress */ rccBaseAddress,
                                /* peripheralRcc  */ PeripheralRccImp::USART1 );
+PeripheralRccImp usart2RccImp( /* rccBaseAddress */ rccBaseAddress,
+                               /* peripheralRcc  */ PeripheralRccImp::USART2 );
 PeripheralRcc* gpioARcc = static_cast<PeripheralRcc*>( &gpioARccImp );
 PeripheralRcc* usart1Rcc = static_cast<PeripheralRcc*>( &usart1RccImp );
+PeripheralRcc* usart2Rcc = static_cast<PeripheralRcc*>( &usart2RccImp );
 
 GpioImp greenLedImp( /* gpioBaseAddress */ gpioABaseAddress,
 					 /* peripheralRcc   */ gpioARcc,
@@ -75,6 +79,20 @@ Usart1_2Imp usart1Imp( /* usartBaseAddress */ usart1BaseAddress,
                        /* txPin            */ usart1Tx );
 Usart* usart1 = static_cast<Usart*>( &usart1Imp );
 
+GpioImp usart2TxImp( /* gpioBaseAddress */ gpioABaseAddress,
+                     /* peripheralRcc   */ gpioARcc,
+                     /* pin             */ GpioImp::pin2 );
+GpioImp usart2RxImp( /* gpioBaseAddress */ gpioABaseAddress,
+                     /* peripheralRcc   */ gpioARcc,
+                     /* pin             */ GpioImp::pin3 );
+Gpio* usart2Tx = static_cast<Gpio*>( &usart2TxImp );
+Gpio* usart2Rx = static_cast<Gpio*>( &usart2RxImp );
+
+Usart1_2Imp usart2Imp( /* usartBaseAddress */ usart2BaseAddress,
+                       /* peripheralRcc    */ usart2Rcc,
+                       /* rxPin            */ usart2Rx,
+                       /* txPin            */ usart2Tx );
+Usart* usart2 = static_cast<Usart*>( &usart2Imp );
 void Main::main()
 {
 	static uint16_t a = 15;
@@ -86,8 +104,10 @@ void Main::main()
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
 	usart1->enable();
+	usart2->enable();
 	Exception::enableGlobal();
-	while ( true )
+
+    while ( true )
 	{
 	    /* Do nothing */
 	}
@@ -104,11 +124,13 @@ void SysTick::handler()
         {
             greenLed->clear();
             usart1->write( 0xAA );
+            usart2->write( 'H' );
         }
         else
         {
             greenLed->set();
             usart1->write( 0x55 );
+            usart2->write( 'W' );
         }
         ledIsOn = !ledIsOn;
         count = 1000;

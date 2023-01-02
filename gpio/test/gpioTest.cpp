@@ -204,6 +204,42 @@ TEST( Gpio, SetGpio5 )
 	delete gpioA5;
 }
 
+/*! Check that when GPIOA pin 2 is instantiated and set to alternate function AF7,
+ *  the pin is set as alternate function and the AF selected is AF7
+ *
+ */
+TEST( Gpio, SetGpioA2AsAf7 )
+{
+    Gpio* gpioA2 = instantiateGpioA( /* pinNumber */ Gpio::pin2 );
+
+    expectedRegister.mode = 0x0C000020;
+    expectedRegister.alternateFunctionLow = 0x00000700;
+
+    gpioA2->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
+
+    vCheckRegisters();
+
+    delete gpioA2;
+}
+
+/*! Check that when GPIOA pin 3 is instantiated and set to alternate function AF7,
+ *  the pin is set as alternate function and the AF selected is AF7
+ *
+ */
+TEST( Gpio, SetGpioA3AsAf7 )
+{
+    Gpio* gpioA3 = instantiateGpioA( /* pinNumber */ Gpio::pin3 );
+
+    expectedRegister.mode = 0x0C000080;
+    expectedRegister.alternateFunctionLow = 0x00007000;
+
+    gpioA3->setToAlternateFunction( /* alternateFunction */ Gpio::AF07 );
+
+    vCheckRegisters();
+
+    delete gpioA3;
+}
+
 /*! Check that when GPIOA pin 9 is instantiated and set to alternate function AF7,
  *  the pin is set as alternate function and the AF selected is AF7
  *
