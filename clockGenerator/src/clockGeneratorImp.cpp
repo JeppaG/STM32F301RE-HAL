@@ -64,6 +64,10 @@ void PeripheralRccImp::enableClock()
 	{
 		rcc->apb2ClockEnable = 0x00000010;
 	}
+    else if  ( peripheral == USART2 )
+    {
+        rcc->apb1ClockEnable = 0x00020000;
+    }
 	else
 	{
 	}

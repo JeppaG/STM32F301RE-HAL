@@ -93,7 +93,8 @@ public:
 	typedef enum
 	{
 		GPIOA,
-		USART1
+		USART1,
+		USART2,
 	} peripheralType;
 
 	PeripheralRccImp( void* const rccBaseAddress, const peripheralType peripheralArg );
