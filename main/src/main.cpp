@@ -29,6 +29,7 @@
 #include "gpioImp.hpp"
 #include "exceptionImp.hpp"
 #include "usartImp.hpp"
+#include "dmaImp.hpp"
 
 void* const scbBaseAddress = reinterpret_cast<void*>( 0xE000ED00 );
 void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
@@ -36,6 +37,8 @@ void* const sysTickTimerBaseAddress = reinterpret_cast<void*>( 0xE000E010 );
 void* const gpioABaseAddress = reinterpret_cast<void*>( 0x40020000 );
 void* const usart1BaseAddress = reinterpret_cast<void*>( 0x40011000 );
 void* const usart2BaseAddress = reinterpret_cast<void*>( 0x40004400 );
+void* const dma1BaseAddress = reinterpret_cast<void*>( 0x40026000 );
+void* const dma2BaseAddress = reinterpret_cast<void*>( 0x40026400 );
 
 ClockGeneratorHsiImp clockGeneratorImp( /* RCC Base Address */ rccBaseAddress );
 ClockGenerator* clockGenerator = static_cast<ClockGenerator*>( &clockGeneratorImp );
@@ -55,9 +58,15 @@ PeripheralRccImp usart1RccImp( /* rccBaseAddress */ rccBaseAddress,
                                /* peripheralRcc  */ PeripheralRccImp::USART1 );
 PeripheralRccImp usart2RccImp( /* rccBaseAddress */ rccBaseAddress,
                                /* peripheralRcc  */ PeripheralRccImp::USART2 );
+PeripheralRccImp dma1RccImp( /* rccBaseAddress */ rccBaseAddress,
+                             /* peripheralRcc  */ PeripheralRccImp::DMA1 );
+PeripheralRccImp dma2RccImp( /* rccBaseAddress */ rccBaseAddress,
+                             /* peripheralRcc  */ PeripheralRccImp::DMA2 );
 PeripheralRcc* gpioARcc = static_cast<PeripheralRcc*>( &gpioARccImp );
 PeripheralRcc* usart1Rcc = static_cast<PeripheralRcc*>( &usart1RccImp );
 PeripheralRcc* usart2Rcc = static_cast<PeripheralRcc*>( &usart2RccImp );
+PeripheralRcc* dma1Rcc = static_cast<PeripheralRcc*>( &dma1RccImp );
+PeripheralRcc* dma2Rcc = static_cast<PeripheralRcc*>( &dma2RccImp );
 
 GpioImp greenLedImp( /* gpioBaseAddress */ gpioABaseAddress,
 					 /* peripheralRcc   */ gpioARcc,
@@ -93,6 +102,19 @@ Usart1_2Imp usart2Imp( /* usartBaseAddress */ usart2BaseAddress,
                        /* rxPin            */ usart2Rx,
                        /* txPin            */ usart2Tx );
 Usart* usart2 = static_cast<Usart*>( &usart2Imp );
+
+DmaImp dmaUsart1TxImp( /* dmaBaseAddress */ dma2BaseAddress,
+                       /* peripheralRcc  */ dma2Rcc,
+                       /* ui8Stream      */ 7,
+                       /* ui8Channel     */ 4 );
+Dma* dmaUsart1Tx = static_cast<Dma*>( &dmaUsart1TxImp );
+
+DmaImp dmaUsart2TxImp( /* dmaBaseAddress */ dma1BaseAddress,
+                       /* peripheralRcc  */ dma1Rcc,
+                       /* ui8Stream      */ 6,
+                       /* ui8Channel     */ 4 );
+Dma* dmaUsart2Tx = static_cast<Dma*>( &dmaUsart2TxImp );
+
 void Main::main()
 {
 	static uint16_t a = 15;
@@ -103,6 +125,8 @@ void Main::main()
 	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
+	dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
+	dmaUsart1Tx->setStreamDirection( Dma::memoryToPeripheral );
 	usart1->enable();
 	usart2->enable();
 	Exception::enableGlobal();
@@ -115,6 +139,8 @@ void Main::main()
 
 void SysTick::handler()
 {
+    const char hello[] = "Hello World\n";
+    const char goodbye = "Goodbye World\n";
     static uint16_t count = 1000;
     static bool ledIsOn = false;
 
@@ -123,13 +149,19 @@ void SysTick::handler()
         if ( ledIsOn )
         {
             greenLed->clear();
-            usart1->write( 0xAA );
+            //usart1->write( 0xAA );
+            dmaUsart1Tx->setMemory0Address( dynamic_cast<void*>( hello ) );
+            dmaUsart1Tx->setNumberOfData( 12 );
+            dmaUsart1Tx->enable();
             usart2->write( 'H' );
         }
         else
         {
             greenLed->set();
-            usart1->write( 0x55 );
+            dmaUsart1Tx->setMemory0Address( dynamic_cast<void*>( goodbye ) );
+            dmaUsart1Tx->setNumberOfData( 14 );
+            dmaUsart1Tx->enable();
+            //usart1->write( 0x55 );
             usart2->write( 'W' );
         }
         ledIsOn = !ledIsOn;

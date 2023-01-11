@@ -68,6 +68,14 @@ void PeripheralRccImp::enableClock()
     {
         rcc->apb1ClockEnable = 0x00020000;
     }
+    else if  ( peripheral == DMA1 )
+    {
+        rcc->ahb1ClockEnable = 0x00200000;
+    }
+    else if  ( peripheral == DMA2 )
+    {
+        rcc->ahb1ClockEnable = 0x00400000;
+    }
 	else
 	{
 	}

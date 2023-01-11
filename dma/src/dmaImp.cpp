@@ -28,30 +28,79 @@ DmaImp::DmaImp( void* const    dmaBaseAddress,
                 uint8_t        ui8Stream,
                 uint8_t        ui8Channel ) :
     dma( static_cast<registerType* const>( dmaBaseAddress ) ),
-    rcc  ( pRcc )
+    rcc  ( pRcc ),
+    stream ( ui8Stream )
 {
     rcc->enableClock();
-    dma->stream6Configuration = 0x08000000;
+    if ( 6 == stream )
+    {
+        dma->stream6Configuration = 0x08000000;
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7Configuration = 0x08000000;
+    }
 }
 
-void DmaImp::setPeripheralAddress( uint32_t ui32Address )
+void DmaImp::setPeripheralAddress( void* pvAddress )
 {
-    dma->stream6PeripheralAddress = ui32Address;
+    if ( 6 == stream )
+    {
+        dma->stream6PeripheralAddress = reinterpret_cast<intptr_t>( pvAddress );
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7PeripheralAddress = reinterpret_cast<intptr_t>( pvAddress );
+    }
 }
 
-void DmaImp::setMemory0Address( uint32_t ui32Address )
+void DmaImp::setMemory0Address( void* pvAddress )
 {
-    dma->stream6Memory0Address = ui32Address;
+    if ( 6 == stream )
+    {
+        dma->stream6Memory0Address = reinterpret_cast<intptr_t>( pvAddress );
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7Memory0Address = reinterpret_cast<intptr_t>( pvAddress );
+    }
+
 }
 
 void DmaImp::setNumberOfData( uint16_t ui16NumberOfData )
 {
-    dma->stream6NumberOfData = ui16NumberOfData;
+    if ( 6 == stream )
+    {
+        dma->stream6NumberOfData = ui16NumberOfData;
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7NumberOfData = ui16NumberOfData;
+    }
 }
 
 void DmaImp::setStreamDirection( uint8_t direction )
 {
-    dma->stream6Configuration |= 0x00000040;
+    if ( 6 == stream )
+    {
+        dma->stream6Configuration |= 0x00000040;
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7Configuration |= 0x00000040;
+    }
+}
+
+void DmaImp::enable()
+{
+    if ( 6 == stream )
+    {
+        dma->stream6Configuration |= 0x00000001;
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7Configuration |= 0x00000001;
+    }
 }
 
 DmaImp::~DmaImp()
