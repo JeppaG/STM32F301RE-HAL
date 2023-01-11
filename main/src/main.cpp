@@ -153,6 +153,7 @@ void SysTick::handler()
             dmaUsart1Tx->setMemory0Address( dynamic_cast<void*>( hello ) );
             dmaUsart1Tx->setNumberOfData( 12 );
             dmaUsart1Tx->enable();
+
             usart2->write( 'H' );
         }
         else
@@ -162,6 +163,7 @@ void SysTick::handler()
             dmaUsart1Tx->setNumberOfData( 14 );
             dmaUsart1Tx->enable();
             //usart1->write( 0x55 );
+r
             usart2->write( 'W' );
         }
         ledIsOn = !ledIsOn;
