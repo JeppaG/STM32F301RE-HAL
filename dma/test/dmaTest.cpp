@@ -247,7 +247,7 @@ TEST_GROUP( Dma )
         Dma* pDma = static_cast<Dma*>( new DmaImp( /* Dma Controller Base address */ &actualRegister,
                                                    /* PeripheralRcc */               rcc,
                                                    /* ui8Stream */                   ui8Stream,
-                                                   /* ui8Channerl */                 ui8Channel ) );
+                                                   /* ui8Channel */                  ui8Channel ) );
         mock().enable();
         return pDma;
     }
@@ -264,10 +264,10 @@ TEST_GROUP( Dma )
 
 };
 
-/*! Check that when DMA stream 6, Chanel 4 is instantiated
+/*! Check that when DMA stream 6, Channel 4 is instantiated
  *   - The peripheralClock for the selected DMA controller is enabled
- *   - The Cannel Select field of stream 6 configuration register is set to Channel 4 */
-TEST( Dma, InstantiateDmaController )
+ *   - The Channel Select field of stream 6 configuration register is set to Channel 4 */
+TEST( Dma, InstantiateDmaStream6 )
 {
     rccMock->expectEnableClock();
     expectedRegister.stream6Configuration = 0x08000000;
@@ -283,6 +283,25 @@ TEST( Dma, InstantiateDmaController )
 	delete dma;
 }
 
+/*! Check that when DMA stream 7, Channel 4 is instantiated
+ *   - The peripheralClock for the selected DMA controller is enabled
+ *   - The Channel Select field of stream 7 configuration register is set to Channel 4 */
+TEST( Dma, InstantiateDmaStream7 )
+{
+    rccMock->expectEnableClock();
+    expectedRegister.stream7Configuration = 0x08000000;
+
+    dma = static_cast<Dma*>( new DmaImp( /*Dma Controller Base address */ &actualRegister,
+                                         /* PeripheralRcc */              rcc,
+                                         /* Stream */                     7,
+                                         /* Channel */                    4 ) );
+
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
 /*! Check that when an adress is given as peripheral adress for stream 6, this address is written to
  *  stream 6 peripheral adress register.
  */
@@ -295,15 +314,34 @@ TEST( Dma, SelectStream6PeripheralAddress)
 
     expectedRegister.stream6PeripheralAddress = peripheralAddress;
 
-    dma->setPeripheralAddress ( /* ui32Address */ peripheralAddress );
+    dma->setPeripheralAddress ( /* pvAddress */ reinterpret_cast<void*>( peripheralAddress ) );
 
     vCheckRegisters();
 
     delete dma;
 }
 
-/*! Check that when an adress is given as Memory0 adress for stream 6, this address is written to
- *  stream 6 memory 0 adress register.
+/*! Check that when an adress is given as peripheral adress for stream 7, this address is written to
+ *  stream 7 peripheral adress register.
+ */
+TEST( Dma, SelectStream7PeripheralAddress)
+{
+    constexpr uint32_t peripheralAddress = static_cast<uint32_t>( 0xAAAA5555 );
+
+    dma = pInstantiateDma( /* ui8Stream */ 7,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream7PeripheralAddress = peripheralAddress;
+
+    dma->setPeripheralAddress ( /* pvAddress */ reinterpret_cast<void*>( peripheralAddress ) );;
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when an address is given as Memory0 adress for stream 6, this address is written to
+ *  stream 6 memory 0 address register.
  */
 TEST( Dma, SelectStream6Memory0Address)
 {
@@ -314,7 +352,26 @@ TEST( Dma, SelectStream6Memory0Address)
 
     expectedRegister.stream6Memory0Address = memory0Address;
 
-    dma->setMemory0Address ( /* ui32Address */ memory0Address );
+    dma->setMemory0Address ( /* pvAddress */ reinterpret_cast<void*>( memory0Address ) );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when an address is given as Memory0 adress for stream 7, this address is written to
+ *  stream 7 memory 0 address register.
+ */
+TEST( Dma, SelectStream7Memory0Address)
+{
+    constexpr uint32_t memory0Address = static_cast<uint32_t>( 0x5555AAAA );
+
+    dma = pInstantiateDma( /* ui8Stream */  7,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream7Memory0Address = memory0Address;
+
+    dma->setMemory0Address ( /* pvAddress */ reinterpret_cast<void*>( memory0Address ) );
 
     vCheckRegisters();
 
@@ -333,14 +390,33 @@ TEST( Dma, SetStream6NumberOfData )
 
     expectedRegister.stream6NumberOfData = numberOfData;
 
-    dma->setNumberOfData ( /* ui32Address */ numberOfData );
+    dma->setNumberOfData ( /* ui16NumberOfData */ numberOfData );
 
     vCheckRegisters();
 
     delete dma;
 }
 
-/*! Check that when the direction is selected as memory-to-peripheral for stream, the direction bits in
+/*! Check that when a number of data is given for stream 7, the number is written to
+ *  stream 7 number of data register.
+ */
+TEST( Dma, SetStream7NumberOfData )
+{
+    constexpr uint16_t numberOfData = static_cast<uint16_t>( 19345 );
+
+    dma = pInstantiateDma( /* ui8Stream */ 7,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream7NumberOfData = numberOfData;
+
+    dma->setNumberOfData ( /* ui16NumberOfData */ numberOfData );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when the direction is selected as memory-to-peripheral for stream 6, the direction bits in
  *  stream 6 configuration register is set to 01 - Memory-to-peripheral.
  */
 TEST( Dma, SetStream6DirMemoryToPeripheral )
@@ -352,6 +428,58 @@ TEST( Dma, SetStream6DirMemoryToPeripheral )
     clearBit ( expectedRegister.stream6Configuration, 7 );
 
     dma->setStreamDirection ( /* direction */ Dma::memoryToPeripheral );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when the direction is selected as memory-to-peripheral for stream 7, the direction bits in
+ *  stream 7 configuration register is set to 01 - Memory-to-peripheral.
+ */
+TEST( Dma, SetStream7DirMemoryToPeripheral )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 7,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream7Configuration, 6 );
+    clearBit ( expectedRegister.stream7Configuration, 7 );
+
+    dma->setStreamDirection ( /* direction */ Dma::memoryToPeripheral );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when dma stream 6 is enabled, the enable bit in the configuration
+ *  register for stream 6 is set
+ */
+TEST( Dma, EnableStream6 )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 6,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream6Configuration, 0 );
+
+    dma->enable ();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when dma stream 7 is enabled, the enable bit in the configuration
+ *  register for stream 7 is set
+ */
+TEST( Dma, EnableStream7 )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 7,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream7Configuration, 0 );
+
+    dma->enable ();
 
     vCheckRegisters();
 

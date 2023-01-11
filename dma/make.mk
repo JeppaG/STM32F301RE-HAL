@@ -1,5 +1,5 @@
 #
-# Copyright 2020 JG Mechatronics AB
+# Copyright 2021 JG Mechatronics AB
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,31 +15,25 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+local_dir := $(PROJ_ROOT)/dma
 
 local_used_if := \
-  startup \
-  exception \
   clockGenerator \
-  gpio \
-  timer \
-  usart \
-  dma \
 
 local_used_imp := \
-  $(local_used_if) \
-  
+
 local_src := \
-  main.cpp \
+  dmaImp.cpp \
 
-main_source_path := $(local_dir)/src
+dma_source_path := $(local_dir)/src
 
-main_include_path := \
+dma_include_path := \
   -I $(local_dir)/if \
+  -I $(local_dir)/imp \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
+$(OBJ_PATH)/%.o : $(dma_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(dma_include_path) $< -o$@ 
       		 
 OBJ += $(local_src:.cpp=.o)

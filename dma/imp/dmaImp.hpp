@@ -94,16 +94,18 @@ public:
             uint8_t        ui8Stream,
             uint8_t        ui8Channel );
 
-    void setPeripheralAddress( uint32_t ui32Address ) override;
-    void setMemory0Address( uint32_t ui32Address ) override;
+    void setPeripheralAddress( void* pvAddress ) override;
+    void setMemory0Address( void* pvAddress ) override;
     void setNumberOfData( uint16_t ui16NumberOfData ) override;
-    void setStreamDirection ( uint8_t direction ) override;
+    void setStreamDirection( uint8_t direction ) override;
+    void enable() override;
 
 	~DmaImp();
 
 private:
 	registerType* const  dma;
 	PeripheralRcc* const rcc;
+	uint8_t        const stream;
 };
 
 

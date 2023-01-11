@@ -29,10 +29,11 @@
 class Dma
 {
 public:
-    virtual void setPeripheralAddress( uint32_t ui32Address ) = 0;
-    virtual void setMemory0Address( uint32_t ui32Address ) = 0;
+    virtual void setPeripheralAddress( void* pvAddress ) = 0;
+    virtual void setMemory0Address( void* pvAddress ) = 0;
     virtual void setNumberOfData( uint16_t ui16NumberOfData ) = 0;
     virtual void setStreamDirection ( uint8_t direction ) = 0;
+    virtual void enable() = 0;
 	virtual ~Dma() = 0;
 
 	static constexpr uint8_t memoryToPeripheral = 1;
