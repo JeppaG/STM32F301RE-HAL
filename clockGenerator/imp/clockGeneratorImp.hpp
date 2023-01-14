@@ -95,6 +95,8 @@ public:
 		GPIOA,
 		USART1,
 		USART2,
+		DMA1,
+		DMA2
 	} peripheralType;
 
 	PeripheralRccImp( void* const rccBaseAddress, const peripheralType peripheralArg );

@@ -24,6 +24,7 @@ UNITS := \
     gpio \
     timer \
     usart \
+    dma \
     
 TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
 

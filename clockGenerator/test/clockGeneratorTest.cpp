@@ -264,6 +264,42 @@ TEST( ClockGenerator, EnableUsart2 )
     delete peripheralRcc;
 }
 
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  DMA1, the DMA1 Clock Enable bit in the AHB1ClockEnable register is set
+ */
+TEST( ClockGenerator, EnableDma1 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::DMA1 ) );
+    CHECK_EQUAL( expectedRegister.ahb1ClockEnable, actualRegister.ahb1ClockEnable );
+
+    expectedRegister.ahb1ClockEnable |= 0x00200000; /* DMA1 ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+}
+
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  DMA2, the DMA2 Clock Enable bit in the AHB1ClockEnable register is set
+ */
+TEST( ClockGenerator, EnableDma2 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::DMA2 ) );
+    CHECK_EQUAL( expectedRegister.ahb1ClockEnable, actualRegister.ahb1ClockEnable );
+
+    expectedRegister.ahb1ClockEnable |= 0x00400000; /* DMA2 ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+}
+
 /*! Check that it is possible to read out the correct APB1 clock speed when the HSI clock is used and
  *  there is no division of neither AHB clock or APB1 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
  *  when peripheralRcc is instantiated for USART2 (which uses APB1)

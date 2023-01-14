@@ -14,32 +14,21 @@
 #  limitations under the License.
 #
 #****************************************************************************
+ 
+PROJ_ROOT = ../..
 
-local_dir := $(PROJ_ROOT)/main
+include $(PROJ_ROOT)/testCommon/commonHeader.mk 
 
-local_used_if := \
-  startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
-  usart \
-  dma \
+# Source file list
 
-local_used_imp := \
-  $(local_used_if) \
+DUT_SOURCE = \
+  dmaImp.cpp \
   
-local_src := \
-  main.cpp \
-
-main_source_path := $(local_dir)/src
-
-main_include_path := \
-  -I $(local_dir)/if \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
+TEST_SOURCE = \
+  dmaTest.cpp \
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
-      		 
-OBJ += $(local_src:.cpp=.o)
+USED_UNITS = \
+  include $(PROJ_ROOT)/assert/mock/make.mk
+  include $(PROJ_ROOT)/clockGenerator/mock/make.mk
+  
+include $(PROJ_ROOT)/testCommon/commonFooter.mk
