@@ -141,8 +141,8 @@ void SysTick::handler()
 {
     const char* helloStr = "Hello World\n";
     const char* goodbyeStr = "Goodbye World\n";
-    void* hello = static_cast<void*>( const_cast<char*>( helloStr ) );
-    void* goodbye = static_cast<void*>( const_cast<char*>( goodbyeStr ) );
+    static void* hello = static_cast<void*>( const_cast<char*>( helloStr ) );
+    static void* goodbye = static_cast<void*>( const_cast<char*>( goodbyeStr ) );
     static uint16_t count = 1000;
     static bool ledIsOn = false;
 
