@@ -33,6 +33,7 @@ public:
     virtual void setMemory0Address( void* pvAddress ) = 0;
     virtual void setNumberOfData( uint16_t ui16NumberOfData ) = 0;
     virtual void setStreamDirection ( uint8_t direction ) = 0;
+    virtual void setMemoryIncrementalMode() = 0;
     virtual void enable() = 0;
 	virtual ~Dma() = 0;
 

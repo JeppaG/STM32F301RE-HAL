@@ -125,8 +125,14 @@ void Main::main()
 	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
-	dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
-	dmaUsart1Tx->setStreamDirection( Dma::memoryToPeripheral );
+    dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
+    dmaUsart1Tx->setStreamDirection( Dma::memoryToPeripheral );
+    dmaUsart1Tx->setMemoryIncrementalMode();
+	dmaUsart2Tx->setPeripheralAddress( usart2BaseAddress + 4 );
+	dmaUsart2Tx->setStreamDirection( Dma::memoryToPeripheral );
+	dmaUsart2Tx->setMemoryIncrementalMode();
+	usart1->enableDmaTx();
+	usart2->enableDmaTx();
 	usart1->enable();
 	usart2->enable();
 	Exception::enableGlobal();
@@ -139,8 +145,8 @@ void Main::main()
 
 void SysTick::handler()
 {
-    const char* helloStr = "Hello World\n";
-    const char* goodbyeStr = "Goodbye World\n";
+    const char* helloStr = "Hello World\r\n";
+    const char* goodbyeStr = "Goodbye World\r\n";
     static void* hello = static_cast<void*>( const_cast<char*>( helloStr ) );
     static void* goodbye = static_cast<void*>( const_cast<char*>( goodbyeStr ) );
     static uint16_t count = 1000;
@@ -151,20 +157,26 @@ void SysTick::handler()
         if ( ledIsOn )
         {
             greenLed->clear();
-            //usart1->write( 0xAA );
-            dmaUsart1Tx->setMemory0Address( hello );
-            dmaUsart1Tx->setNumberOfData( 12 );
+            dmaUsart2Tx->setMemory0Address( hello );
+            dmaUsart2Tx->setNumberOfData( 13 );
+            usart2->clearTxComplete();
+            dmaUsart2Tx->enable();
+            dmaUsart1Tx->setMemory0Address( goodbye );
+            dmaUsart1Tx->setNumberOfData( 15 );
+            usart1->clearTxComplete();
             dmaUsart1Tx->enable();
-            usart2->write( 'H' );
         }
         else
         {
             greenLed->set();
-            dmaUsart1Tx->setMemory0Address( goodbye );
-            dmaUsart1Tx->setNumberOfData( 14 );
+            dmaUsart2Tx->setMemory0Address( goodbye );
+            dmaUsart2Tx->setNumberOfData( 15 );
+            usart2->clearTxComplete();
+            dmaUsart2Tx->enable();
+            dmaUsart1Tx->setMemory0Address( hello );
+            dmaUsart1Tx->setNumberOfData( 13 );
+            usart1->clearTxComplete();
             dmaUsart1Tx->enable();
-            //usart1->write( 0x55 );
-            usart2->write( 'W' );
         }
         ledIsOn = !ledIsOn;
         count = 1000;

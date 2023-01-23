@@ -58,7 +58,7 @@ void PeripheralRccImp::enableClock()
 {
 	if ( peripheral == GPIOA )
 	{
-		rcc->ahb1ClockEnable = 0x00000001;
+		rcc->ahb1ClockEnable |= 0x00000001;
 	}
 	else if  ( peripheral == USART1 )
 	{
@@ -70,11 +70,11 @@ void PeripheralRccImp::enableClock()
     }
     else if  ( peripheral == DMA1 )
     {
-        rcc->ahb1ClockEnable = 0x00200000;
+        rcc->ahb1ClockEnable |= 0x00200000;
     }
     else if  ( peripheral == DMA2 )
     {
-        rcc->ahb1ClockEnable = 0x00400000;
+        rcc->ahb1ClockEnable |= 0x00400000;
     }
 	else
 	{

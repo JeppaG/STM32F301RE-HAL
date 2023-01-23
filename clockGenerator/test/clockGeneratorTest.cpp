@@ -300,6 +300,78 @@ TEST( ClockGenerator, EnableDma2 )
     delete peripheralRcc;
 }
 
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  GPIOA and then an instance of peripheralClockControl is used to enable the clock for DMA2,
+ *  the DMA2 Clock Enable bit in AHB1ClockEnable register is set while the GPIOA Clock Enable
+ *  bit remains set.
+ */
+TEST( ClockGenerator, EnableGpioAndThenDma2 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::GPIOA ) );
+
+    PeripheralRcc* dma2Rcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                                  /* Peripheras Rcc */ PeripheralRccImp::DMA2 ) );
+
+    expectedRegister.ahb1ClockEnable |= 0x00400001; /* DMA2 and GPIOA ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+    dma2Rcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+    delete dma2Rcc;
+}
+
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  GPIOA and then an instance of peripheralClockControl is used to enable the clock for DMA1,
+ *  the DMA1 Clock Enable bit in AHB1ClockEnable register is set while the GPIOA Clock Enable
+ *  bit remains set.
+ */
+TEST( ClockGenerator, EnableGpioAndThenDma1 )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::GPIOA ) );
+
+    PeripheralRcc* dma1Rcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                                  /* Peripheras Rcc */ PeripheralRccImp::DMA1 ) );
+
+    expectedRegister.ahb1ClockEnable |= 0x00200001; /* DMA1 and GPIOA ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+    dma1Rcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+    delete dma1Rcc;
+}
+
+/*! Check that when an instance of peripheralClockControl is used to enable the clock for
+ *  DMA2 and then an instance of peripheralClockControl is used to enable the clock for GPIOA,
+ *  the GPIOA Clock Enable bit in AHB1ClockEnable register is set while the DMA 2 Clock Enable
+ *  bit remains set.
+ */
+TEST( ClockGenerator, EnableDma2AndThenGpioA )
+{
+    peripheralRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                        /* Peripheral Rcc */   PeripheralRccImp::DMA2 ) );
+
+    PeripheralRcc* gpioaRcc = dynamic_cast<PeripheralRcc*>( new PeripheralRccImp( /* RCC Base address */ &actualRegister,
+                                                                                  /* Peripheras Rcc */ PeripheralRccImp::GPIOA ) );
+
+    expectedRegister.ahb1ClockEnable |= 0x00400001; /* DMA2 and GPIOA ClockEnable bit set */
+
+    peripheralRcc->enableClock();
+    gpioaRcc->enableClock();
+
+    vCheckRegisters();
+
+    delete peripheralRcc;
+    delete gpioaRcc;
+}
+
 /*! Check that it is possible to read out the correct APB1 clock speed when the HSI clock is used and
  *  there is no division of neither AHB clock or APB1 clock, Ie, APB2Clk = AHBClk = SysClk = 16000000 Hz
  *  when peripheralRcc is instantiated for USART2 (which uses APB1)

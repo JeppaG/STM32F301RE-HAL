@@ -214,6 +214,32 @@ TEST ( Usart, WriteChar )
     delete usart;
 }
 
+/*! Check that when DMA Transmit is enabled on the USART bit DMAT is set in the CR3 register */
+TEST ( Usart, EnableDmaTransmit )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x00000080;
+    usart->enableDmaTx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when a manual Transmission Complete is issued the TC bit in the SR register is cleared */
+TEST ( Usart, ClearTxComplete )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.status = 0x00C00400;
+    usart->clearTxComplete();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
 int main( int ac, char** av )
 {
 	return CommandLineTestRunner::RunAllTests( ac, av );

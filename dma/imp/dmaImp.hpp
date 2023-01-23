@@ -98,6 +98,7 @@ public:
     void setMemory0Address( void* pvAddress ) override;
     void setNumberOfData( uint16_t ui16NumberOfData ) override;
     void setStreamDirection( uint8_t direction ) override;
+    void setMemoryIncrementalMode() override;
     void enable() override;
 
 	~DmaImp();

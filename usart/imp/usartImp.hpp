@@ -51,7 +51,9 @@ public:
 				 Gpio*		          txPin );
 
     virtual void setBaudRate( uint32_t baudRate ) override;
+    virtual void enableDmaTx() override;
     virtual void enable() override;
+    virtual void clearTxComplete() override;
     virtual void write( const uint8_t data ) override;
 
 	~Usart1_2Imp();

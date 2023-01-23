@@ -91,14 +91,29 @@ void DmaImp::setStreamDirection( uint8_t direction )
     }
 }
 
+void DmaImp::setMemoryIncrementalMode()
+{
+    if ( 6 == stream )
+    {
+        dma->stream6Configuration |= 0x00000400;
+    }
+    else if ( 7 == stream )
+    {
+        dma->stream7Configuration |= 0x00000400;
+    }
+
+}
+
 void DmaImp::enable()
 {
     if ( 6 == stream )
     {
+        dma->highInterruptFlagClear = 0x003D0000;
         dma->stream6Configuration |= 0x00000001;
     }
     else if ( 7 == stream )
     {
+        dma->highInterruptFlagClear = 0x0F400000;
         dma->stream7Configuration |= 0x00000001;
     }
 }
