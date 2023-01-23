@@ -62,3 +62,9 @@ clean :
 debug : ; $(info OBJ is [$(OBJ)])
 
 all : $(BUILD_PATH)/main.elf
+
+upload : $(BUILD_PATH)/main.elf
+	$(GNU_ARM_TOOL_PATH)/bin/arm-none-eabi-objcopy -Oihex $(BUILD_PATH)/main.elf $(BUILD_PATH)/main.hex
+	$(OPENOCD_PATH)/bin/openocd -f $(OPENOCD_PATH)/scripts/board/st_nucleo_f4.cfg -c "init; reset halt; flash write_image erase $(BUILD_PATH)/main.hex; reset run; exit"
+	
+	

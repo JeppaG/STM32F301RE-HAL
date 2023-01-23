@@ -452,14 +452,54 @@ TEST( Dma, SetStream7DirMemoryToPeripheral )
     delete dma;
 }
 
-/*! Check that when dma stream 6 is enabled, the enable bit in the configuration
- *  register for stream 6 is set
+/*! Check that when memmory incremental mode is set for stream 6, the MINC bit in
+ *  stream 6 configuration register is set to 1 - Memory-to-peripheral.
+ */
+TEST( Dma, SetStream6DirMemoryIncrementalMode )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 6,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream6Configuration, 10 );
+
+    dma->setMemoryIncrementalMode();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when memmory incremental mode is set for stream 7, the MINC bit in
+ *  stream 7 configuration register is set to 1 - Memory-to-peripheral.
+ */
+TEST( Dma, SetStream7DirMemoryIncrementalMode )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 7,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream7Configuration, 10 );
+
+    dma->setMemoryIncrementalMode();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when dma stream 6 is enabled:
+ *  - Check that 1 is written to the interrupt flag clear bits related to stream 6
+ *  - Check that the enable bit in the configuration register for stream 6 is set
  */
 TEST( Dma, EnableStream6 )
 {
     dma = pInstantiateDma( /* ui8Stream */ 6,
                            /* ui8Channel */ 4 );
 
+    setBit ( expectedRegister.highInterruptFlagClear,16 );
+    setBit ( expectedRegister.highInterruptFlagClear,18 );
+    setBit ( expectedRegister.highInterruptFlagClear,19 );
+    setBit ( expectedRegister.highInterruptFlagClear,20 );
+    setBit ( expectedRegister.highInterruptFlagClear,21 );
     setBit ( expectedRegister.stream6Configuration, 0 );
 
     dma->enable ();
@@ -469,14 +509,20 @@ TEST( Dma, EnableStream6 )
     delete dma;
 }
 
-/*! Check that when dma stream 7 is enabled, the enable bit in the configuration
- *  register for stream 7 is set
+/*! Check that when dma stream 7 is enabled:
+ *  - Check that 1 is written to the interrupt flag clear bits related to stream 7
+ *  - Check that the enable bit in the configuration register for stream 7 is set
  */
 TEST( Dma, EnableStream7 )
 {
     dma = pInstantiateDma( /* ui8Stream */ 7,
                            /* ui8Channel */ 4 );
 
+    setBit ( expectedRegister.highInterruptFlagClear,22 );
+    setBit ( expectedRegister.highInterruptFlagClear,24 );
+    setBit ( expectedRegister.highInterruptFlagClear,25 );
+    setBit ( expectedRegister.highInterruptFlagClear,26 );
+    setBit ( expectedRegister.highInterruptFlagClear,27 );
     setBit ( expectedRegister.stream7Configuration, 0 );
 
     dma->enable ();
