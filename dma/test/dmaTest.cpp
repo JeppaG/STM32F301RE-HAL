@@ -302,6 +302,44 @@ TEST( Dma, InstantiateDmaStream7 )
     delete dma;
 }
 
+/*! Check that when DMA stream 5, Channel 4 is instantiated
+ *   - The peripheralClock for the selected DMA controller is enabled
+ *   - The Channel Select field of stream 5 configuration register is set to Channel 4 */
+TEST( Dma, InstantiateDmaStream5 )
+{
+    rccMock->expectEnableClock();
+    expectedRegister.stream5Configuration = 0x08000000;
+
+    dma = static_cast<Dma*>( new DmaImp( /*Dma Controller Base address */ &actualRegister,
+                                         /* PeripheralRcc */              rcc,
+                                         /* Stream */                     5,
+                                         /* Channel */                    4 ) );
+
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when an adress is given as peripheral adress for stream 5, this address is written to
+ *  stream 5 peripheral adress register.
+ */
+TEST( Dma, SelectStream5PeripheralAddress)
+{
+    constexpr uint32_t peripheralAddress = static_cast<uint32_t>( 0xAAAA5555 );
+
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream5PeripheralAddress = peripheralAddress;
+
+    dma->setPeripheralAddress ( /* pvAddress */ reinterpret_cast<void*>( peripheralAddress ) );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
 /*! Check that when an adress is given as peripheral adress for stream 6, this address is written to
  *  stream 6 peripheral adress register.
  */
@@ -334,6 +372,25 @@ TEST( Dma, SelectStream7PeripheralAddress)
     expectedRegister.stream7PeripheralAddress = peripheralAddress;
 
     dma->setPeripheralAddress ( /* pvAddress */ reinterpret_cast<void*>( peripheralAddress ) );;
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when an address is given as Memory0 adress for stream 5, this address is written to
+ *  stream 5 memory 0 address register.
+ */
+TEST( Dma, SelectStream5Memory0Address)
+{
+    constexpr uint32_t memory0Address = static_cast<uint32_t>( 0x5555AAAA );
+
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream5Memory0Address = memory0Address;
+
+    dma->setMemory0Address ( /* pvAddress */ reinterpret_cast<void*>( memory0Address ) );
 
     vCheckRegisters();
 
@@ -378,6 +435,25 @@ TEST( Dma, SelectStream7Memory0Address)
     delete dma;
 }
 
+/*! Check that when a number of data is given for stream 5, the number is written to
+ *  stream 5 number of data register.
+ */
+TEST( Dma, SetStream5NumberOfData )
+{
+    constexpr uint16_t numberOfData = static_cast<uint16_t>( 19345 );
+
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    expectedRegister.stream5NumberOfData = numberOfData;
+
+    dma->setNumberOfData ( /* ui16NumberOfData */ numberOfData );
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
 /*! Check that when a number of data is given for stream 6, the number is written to
  *  stream 6 number of data register.
  */
@@ -416,6 +492,26 @@ TEST( Dma, SetStream7NumberOfData )
     delete dma;
 }
 
+/*! Check that when the direction is selected as peripheral-to-memory for stream 5, the direction bits in
+ *  stream 5 configuration register is set to 00 - Peripheral-to-memory.
+ */
+TEST( Dma, SetStream5DirPeripheralToMemory )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    // Set the direction bits in the actual registers, so that the DUT needs to clear them
+    // for the test to pass
+    setBit ( actualRegister.stream5Configuration, 6 );
+    setBit ( actualRegister.stream5Configuration, 7 );
+
+    dma->setDirectionPeripheralToMemory();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
 /*! Check that when the direction is selected as memory-to-peripheral for stream 6, the direction bits in
  *  stream 6 configuration register is set to 01 - Memory-to-peripheral.
  */
@@ -427,7 +523,7 @@ TEST( Dma, SetStream6DirMemoryToPeripheral )
     setBit ( expectedRegister.stream6Configuration, 6 );
     clearBit ( expectedRegister.stream6Configuration, 7 );
 
-    dma->setStreamDirection ( /* direction */ Dma::memoryToPeripheral );
+    dma->setDirectionMemoryToPeripheral ();
 
     vCheckRegisters();
 
@@ -445,7 +541,24 @@ TEST( Dma, SetStream7DirMemoryToPeripheral )
     setBit ( expectedRegister.stream7Configuration, 6 );
     clearBit ( expectedRegister.stream7Configuration, 7 );
 
-    dma->setStreamDirection ( /* direction */ Dma::memoryToPeripheral );
+    dma->setDirectionMemoryToPeripheral ();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when memmory incremental mode is set for stream 5, the MINC bit in
+ *  stream 5 configuration register is set to 1 - Incremental mode.
+ */
+TEST( Dma, SetStream5MemoryIncrementalMode )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream5Configuration, 10 );
+
+    dma->setMemoryIncrementalMode();
 
     vCheckRegisters();
 
@@ -453,9 +566,9 @@ TEST( Dma, SetStream7DirMemoryToPeripheral )
 }
 
 /*! Check that when memmory incremental mode is set for stream 6, the MINC bit in
- *  stream 6 configuration register is set to 1 - Memory-to-peripheral.
+ *  stream 6 configuration register is set to 1 - Incremental mode.
  */
-TEST( Dma, SetStream6DirMemoryIncrementalMode )
+TEST( Dma, SetStream6MemoryIncrementalMode )
 {
     dma = pInstantiateDma( /* ui8Stream */ 6,
                            /* ui8Channel */ 4 );
@@ -470,9 +583,9 @@ TEST( Dma, SetStream6DirMemoryIncrementalMode )
 }
 
 /*! Check that when memmory incremental mode is set for stream 7, the MINC bit in
- *  stream 7 configuration register is set to 1 - Memory-to-peripheral.
+ *  stream 7 configuration register is set to 1 - Incremental mode.
  */
-TEST( Dma, SetStream7DirMemoryIncrementalMode )
+TEST( Dma, SetStream7MemoryIncrementalMode )
 {
     dma = pInstantiateDma( /* ui8Stream */ 7,
                            /* ui8Channel */ 4 );
@@ -480,6 +593,29 @@ TEST( Dma, SetStream7DirMemoryIncrementalMode )
     setBit ( expectedRegister.stream7Configuration, 10 );
 
     dma->setMemoryIncrementalMode();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that when dma stream 5 is enabled:
+ *  - Check that 1 is written to the interrupt flag clear bits related to stream 5
+ *  - Check that the enable bit in the configuration register for stream 5 is set
+ */
+TEST( Dma, EnableStream5 )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.highInterruptFlagClear,6 );
+    setBit ( expectedRegister.highInterruptFlagClear,8 );
+    setBit ( expectedRegister.highInterruptFlagClear,9 );
+    setBit ( expectedRegister.highInterruptFlagClear,10 );
+    setBit ( expectedRegister.highInterruptFlagClear,11 );
+    setBit ( expectedRegister.stream5Configuration, 0 );
+
+    dma->enable ();
 
     vCheckRegisters();
 

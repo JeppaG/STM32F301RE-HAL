@@ -21,100 +21,72 @@
  *      Author: jeppa
  */
 
+#include <cstddef>
+#include <cstdio>
 #include "dmaImp.hpp"
 
 DmaImp::DmaImp( void* const    dmaBaseAddress,
                 PeripheralRcc* const pRcc,
                 uint8_t        ui8Stream,
                 uint8_t        ui8Channel ) :
-    dma( static_cast<registerType* const>( dmaBaseAddress ) ),
+    interruptReg( static_cast<interruptRegisterType* const>( dmaBaseAddress ) ),
+    streamReg( reinterpret_cast<streamRegisterType* const>(
+                        reinterpret_cast<uintptr_t>( dmaBaseAddress )
+                      + sizeof( interruptRegisterType )
+                      + ui8Stream* sizeof( streamRegisterType ) ) ),
     rcc  ( pRcc ),
     stream ( ui8Stream )
 {
     rcc->enableClock();
-    if ( 6 == stream )
-    {
-        dma->stream6Configuration = 0x08000000;
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7Configuration = 0x08000000;
-    }
+    streamReg->configuration = 0x08000000;
 }
 
 void DmaImp::setPeripheralAddress( void* pvAddress )
 {
-    if ( 6 == stream )
-    {
-        dma->stream6PeripheralAddress = reinterpret_cast<intptr_t>( pvAddress );
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7PeripheralAddress = reinterpret_cast<intptr_t>( pvAddress );
-    }
+    streamReg->peripheralAddress = reinterpret_cast<uintptr_t>( pvAddress );
 }
 
 void DmaImp::setMemory0Address( void* pvAddress )
 {
-    if ( 6 == stream )
-    {
-        dma->stream6Memory0Address = reinterpret_cast<intptr_t>( pvAddress );
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7Memory0Address = reinterpret_cast<intptr_t>( pvAddress );
-    }
-
+    streamReg->memory0Address = reinterpret_cast<uintptr_t>( pvAddress );
 }
 
 void DmaImp::setNumberOfData( uint16_t ui16NumberOfData )
 {
-    if ( 6 == stream )
-    {
-        dma->stream6NumberOfData = ui16NumberOfData;
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7NumberOfData = ui16NumberOfData;
-    }
+    streamReg->numberOfData = ui16NumberOfData;
 }
 
-void DmaImp::setStreamDirection( uint8_t direction )
+void DmaImp::setDirectionMemoryToPeripheral()
 {
-    if ( 6 == stream )
-    {
-        dma->stream6Configuration |= 0x00000040;
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7Configuration |= 0x00000040;
-    }
+    streamReg->configuration |= 0x00000040;
+}
+
+void DmaImp::setDirectionPeripheralToMemory()
+{
+    streamReg->configuration &=0xFFFFFF3F;
 }
 
 void DmaImp::setMemoryIncrementalMode()
 {
-    if ( 6 == stream )
-    {
-        dma->stream6Configuration |= 0x00000400;
-    }
-    else if ( 7 == stream )
-    {
-        dma->stream7Configuration |= 0x00000400;
-    }
-
+    streamReg->configuration |= 0x00000400;
 }
 
 void DmaImp::enable()
 {
+    if ( 5 == stream )
+    {
+        interruptReg->highInterruptFlagClear = 0x00000F40;
+        streamReg->configuration |= 0x00000001;
+    }
     if ( 6 == stream )
     {
-        dma->highInterruptFlagClear = 0x003D0000;
-        dma->stream6Configuration |= 0x00000001;
+        interruptReg->highInterruptFlagClear = 0x003D0000;
+        streamReg->configuration |= 0x00000001;
     }
     else if ( 7 == stream )
     {
-        dma->highInterruptFlagClear = 0x0F400000;
-        dma->stream7Configuration |= 0x00000001;
+        interruptReg->highInterruptFlagClear = 0x0F400000;
+        streamReg->configuration |= 0x00000001;
     }
 }
 
