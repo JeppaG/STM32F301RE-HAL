@@ -126,10 +126,10 @@ void Main::main()
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
     dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
-    dmaUsart1Tx->setStreamDirection( Dma::memoryToPeripheral );
+    dmaUsart1Tx->setDirectionMemoryToPeripheral();
     dmaUsart1Tx->setMemoryIncrementalMode();
 	dmaUsart2Tx->setPeripheralAddress( usart2BaseAddress + 4 );
-	dmaUsart2Tx->setStreamDirection( Dma::memoryToPeripheral );
+	dmaUsart2Tx->setDirectionMemoryToPeripheral();
 	dmaUsart2Tx->setMemoryIncrementalMode();
 	usart1->enableDmaTx();
 	usart2->enableDmaTx();

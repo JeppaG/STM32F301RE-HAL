@@ -32,11 +32,13 @@ public:
     virtual void setPeripheralAddress( void* pvAddress ) = 0;
     virtual void setMemory0Address( void* pvAddress ) = 0;
     virtual void setNumberOfData( uint16_t ui16NumberOfData ) = 0;
-    virtual void setStreamDirection ( uint8_t direction ) = 0;
+    virtual void setDirectionMemoryToPeripheral () = 0;
+    virtual void setDirectionPeripheralToMemory () = 0;
     virtual void setMemoryIncrementalMode() = 0;
+    virtual void setCircularMode() = 0;
+    virtual uint32_t getNumberOfData() = 0;
     virtual void enable() = 0;
 	virtual ~Dma() = 0;
 
-	static constexpr uint8_t memoryToPeripheral = 1;
 };
 #endif /* DMA_IF_DMA_HPP_ */
