@@ -35,6 +35,8 @@ public:
     virtual void setDirectionMemoryToPeripheral () = 0;
     virtual void setDirectionPeripheralToMemory () = 0;
     virtual void setMemoryIncrementalMode() = 0;
+    virtual void setCircularMode() = 0;
+    virtual uint32_t getNumberOfData() = 0;
     virtual void enable() = 0;
 	virtual ~Dma() = 0;
 

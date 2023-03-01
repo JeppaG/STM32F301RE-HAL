@@ -71,6 +71,16 @@ void DmaImp::setMemoryIncrementalMode()
     streamReg->configuration |= 0x00000400;
 }
 
+void DmaImp::setCircularMode()
+{
+    streamReg->configuration |= 0x00000100;
+}
+
+uint32_t DmaImp::getNumberOfData()
+{
+    return streamReg->numberOfData;
+}
+
 void DmaImp::enable()
 {
     if ( 5 == stream )

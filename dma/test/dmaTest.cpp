@@ -599,6 +599,38 @@ TEST( Dma, SetStream7MemoryIncrementalMode )
     delete dma;
 }
 
+/*! Check that when circular mode is set for stream 5, the CIRC bit in
+ *  stream 5 configuration register is set to 1 - Circular mode.
+ */
+TEST( Dma, SetStream5CircularMode )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    setBit ( expectedRegister.stream5Configuration, 8 );
+
+    dma->setCircularMode();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
+/*! Check that the remaining number of data in stream 5 is returned
+ *  from the getNumberOfData function.
+ */
+TEST( Dma, GetStream5NumberOfData )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    actualRegister.stream5NumberOfData = 12345;
+
+    CHECK_EQUAL( 12345, dma->getNumberOfData() );
+
+    delete dma;
+}
+
 /*! Check that when dma stream 5 is enabled:
  *  - Check that 1 is written to the interrupt flag clear bits related to stream 5
  *  - Check that the enable bit in the configuration register for stream 5 is set
