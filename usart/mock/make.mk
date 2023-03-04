@@ -15,22 +15,18 @@
 #
 #****************************************************************************
 
-TOPTARGETS := all run clean
-PROJ_ROOT = ..
+local_dir := $(PROJ_ROOT)/usart
 
-UNITS := \
-    clockGenerator \
-    exception \
-    gpio \
-    timer \
-    usart \
-    dma \
-    serialPort \
-    
-TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
+local_src := \
+  usartMock.cpp \
 
-$(TOPTARGETS): $(TEST_DIRS)
-$(TEST_DIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
-	
-.PHONY: $(TOPTARGETS) $(TEST_DIRS)
+usart_mock_source_path := $(local_dir)/mock/src
+
+INCLUDE_PATH += -I $(local_dir)/if
+INCLUDE_PATH += -I $(local_dir)/mock/inc 
+  
+$(OBJ_PATH)/%.o : $(usart_mock_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@ 
+      		 
+OBJ += $(local_src:.cpp=.o)
+

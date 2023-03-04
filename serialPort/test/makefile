@@ -14,23 +14,23 @@
 #  limitations under the License.
 #
 #****************************************************************************
+ 
+PROJ_ROOT = ../..
 
-TOPTARGETS := all run clean
-PROJ_ROOT = ..
+include $(PROJ_ROOT)/testCommon/commonHeader.mk 
 
-UNITS := \
-    clockGenerator \
-    exception \
-    gpio \
-    timer \
-    usart \
-    dma \
-    serialPort \
-    
-TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
+# Source file list
 
-$(TOPTARGETS): $(TEST_DIRS)
-$(TEST_DIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
-	
-.PHONY: $(TOPTARGETS) $(TEST_DIRS)
+DUT_SOURCE = \
+  serialPortImp.cpp \
+  
+TEST_SOURCE = \
+  serialPortTest.cpp \
+  
+USED_UNITS = \
+  include $(PROJ_ROOT)/assert/mock/make.mk
+  include $(PROJ_ROOT)/usart/mock/make.mk
+  include $(PROJ_ROOT)/dma/mock/make.mk
+  
+
+include $(PROJ_ROOT)/testCommon/commonFooter.mk
