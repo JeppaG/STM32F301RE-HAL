@@ -39,7 +39,7 @@ Dma::~Dma()
 
 void DmaMock::setPeripheralAddress( void* pvAddress )
 {
-  //  reinterpret_cast<void*>( pvAddress );
+    mock().actualCall( "setPeripheralAddress" ).onObject( this ).withPointerParameter( "pvAddress", pvAddress );
 }
 
 void DmaMock::setMemory0Address( void* pvAddress )
@@ -54,14 +54,17 @@ void DmaMock::setNumberOfData( uint16_t ui16NumberOfData )
 
 void DmaMock::setDirectionMemoryToPeripheral()
 {
+    mock().actualCall( "setDirectionMemoryToPeripheral" ).onObject( this );
 }
 
 void DmaMock::setDirectionPeripheralToMemory()
 {
+    mock().actualCall( "setDirectionPeripheralToMemory" ).onObject( this );
 }
 
 void DmaMock::setMemoryIncrementalMode()
 {
+    mock().actualCall( "setMemoryIncrementalMode" ).onObject( this );
 }
 
 void DmaMock::setCircularMode()

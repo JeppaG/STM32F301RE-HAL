@@ -23,10 +23,20 @@
 
 #include "serialPortImp.hpp"
 
-SerialPortImp::SerialPortImp( Usart* const pRcc,
-						      Dma*	 const txDma,
-						      Dma*	 const rxPin )
+SerialPortImp::SerialPortImp( Usart* const pUsart,
+						      Dma*	 const pTxDma,
+						      Dma*	 const pRxDma )
 {
+    const void* usartBaseAddress = pUsart->getBaseAddress();
+    pTxDma->setPeripheralAddress( const_cast<void*>( usartBaseAddress ) + 4 );
+    pRxDma->setPeripheralAddress( const_cast<void*>( usartBaseAddress ) + 4 );
+    pTxDma->setDirectionMemoryToPeripheral();
+    pRxDma->setDirectionPeripheralToMemory();
+    pTxDma->setMemoryIncrementalMode();
+    pRxDma->setMemoryIncrementalMode();
+    pUsart->enableDmaTx();
+    pUsart->enableDmaRx();
+    pUsart->enable();
 }
 
 SerialPortImp::~SerialPortImp()

@@ -50,8 +50,10 @@ public:
     			 Gpio*		          rxPin,
 				 Gpio*		          txPin );
 
+    virtual const void* getBaseAddress() override;
     virtual void setBaudRate( uint32_t baudRate ) override;
     virtual void enableDmaTx() override;
+    virtual void enableDmaRx() override;
     virtual void enable() override;
     virtual void clearTxComplete() override;
     virtual void write( const uint8_t data ) override;

@@ -39,13 +39,13 @@ public:
 	~UsartMock();
 
 	/* Mocked functions */
+	const void* getBaseAddress() override;
     void setBaudRate( uint32_t baudRate ) override;
     void enableDmaTx() override;
+    void enableDmaRx() override;
     void enable() override;
     void write( const uint8_t data ) override;
     void clearTxComplete() override;
-
-	/* Test case helper functions */
 
 private:
 

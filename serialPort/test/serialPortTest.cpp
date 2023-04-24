@@ -68,13 +68,33 @@ TEST_GROUP( SerialPort  )
 };
 
 /*! Check that when a serial port is instantiated:
- * Things do happen.
+ * - The base address of the usart is fetched
+ * - The peripheral address on both dma streams is set to the base address of the usart + 4
+ * - The txDma stream is set to direction Memory to Peripheral.
+ * - The rxDma stream is set to direction Peripheral to Memory.
+ * - Both dma streams are set to memory incremental mode.
+ * - txDma is enabled on the USART
+ * - rxDma is enabled on the USART
+ * - tx is enabled on the USART
  */
 TEST( SerialPort, Instantiate )
 {
-	serialPort = static_cast<SerialPort*>( new SerialPortImp( /* Usart */ usart,
-	                                                          /* txDma */ txDma,
-												              /* rxDma */ rxDma ) );
+    const void* usartBaseAddress = reinterpret_cast<const void*>( 0x40011000 );
+
+    mock().expectOneCall( "getBaseAddress" ).onObject( usart ).andReturnValue( usartBaseAddress );
+    mock().expectOneCall( "setPeripheralAddress" ).onObject( txDma ).withPointerParameter( "pvAddress", const_cast<void*>( usartBaseAddress ) + 4 );
+    mock().expectOneCall( "setPeripheralAddress" ).onObject( rxDma ).withPointerParameter( "pvAddress", const_cast<void*>( usartBaseAddress ) + 4 );
+    mock().expectOneCall( "setDirectionMemoryToPeripheral" ).onObject( txDma );
+    mock().expectOneCall( "setDirectionPeripheralToMemory" ).onObject( rxDma );
+    mock().expectOneCall( "setMemoryIncrementalMode" ).onObject( txDma );
+    mock().expectOneCall( "setMemoryIncrementalMode" ).onObject( rxDma );
+    mock().expectOneCall( "enableDmaTx" ).onObject( usart );
+    mock().expectOneCall( "enableDmaRx" ).onObject( usart );
+    mock().expectOneCall( "enable" ).onObject( usart );
+
+	serialPort = static_cast<SerialPort*>( new SerialPortImp( /* Usart */            usart,
+	                                                          /* txDma */            txDma,
+												              /* rxDma */            rxDma ) );
 
 	delete serialPort;
 }

@@ -166,6 +166,17 @@ TEST( Usart, InstantiateUsart1_2 )
 	delete usart;
 }
 
+/*! Check that when the usart base address is requested, the base address that
+ *  was assigned during instantiation is returned */
+TEST( Usart, GetBaseAddress )
+{
+    usart = pInstantiateUsart1_2();
+
+    CHECK_EQUAL( &actualRegister, usart->getBaseAddress() );
+
+    delete usart;
+}
+
 /*! Check that when the correct data is written to the baudrate register
  *  of Usart1_2 when the baudrate is set to 115200
  *  with 16000000 MHz clock and 16 times oversampling */
@@ -221,6 +232,19 @@ TEST ( Usart, EnableDmaTransmit )
 
     expectedRegister.control3 = 0x00000080;
     usart->enableDmaTx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when DMA Receive is enabled on the USART bit DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaReceive )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x00000040;
+    usart->enableDmaRx();
 
     vCheckRegisters();
 

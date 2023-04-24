@@ -37,6 +37,11 @@ Usart::~Usart()
     /* C++ demands that even a pure virtual destructor has an implementation */
 }
 
+const void* UsartMock::getBaseAddress()
+{
+    return mock().actualCall( "getBaseAddress" ).onObject( this ).returnConstPointerValue();
+}
+
 void UsartMock::setBaudRate( uint32_t baudRate )
 {
    // reinterpret_cast<void*>( baudRate );
@@ -44,10 +49,17 @@ void UsartMock::setBaudRate( uint32_t baudRate )
 
 void UsartMock::enableDmaTx()
 {
+    mock().actualCall( "enableDmaTx" ).onObject( this );
+}
+
+void UsartMock::enableDmaRx()
+{
+    mock().actualCall( "enableDmaRx" ).onObject( this );
 }
 
 void UsartMock::enable()
 {
+    mock().actualCall( "enable" ).onObject( this );
 }
 
 void UsartMock::write( const uint8_t data )
@@ -58,3 +70,7 @@ void UsartMock::write( const uint8_t data )
 void UsartMock::clearTxComplete()
 {
 }
+
+/*
+ * Test case helper functions
+ */

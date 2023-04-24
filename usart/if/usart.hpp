@@ -29,8 +29,10 @@
 class Usart
 {
 public:
+    virtual const void* getBaseAddress() = 0;
     virtual void setBaudRate( uint32_t baudRate ) = 0;
     virtual void enableDmaTx() = 0;
+    virtual void enableDmaRx() = 0;
     virtual void enable() = 0;
     virtual void write( const uint8_t data ) = 0;
     virtual void clearTxComplete() = 0;
