@@ -39,9 +39,13 @@ public:
                    Dma*   txDma,
                    Dma*   rxDma );
 
+    void transmit( void* buffer, uint16_t size ) override;
+
     ~SerialPortImp();
 
 private:
+    Usart* const usart;
+    Dma*   const txDma;
 };
 
 

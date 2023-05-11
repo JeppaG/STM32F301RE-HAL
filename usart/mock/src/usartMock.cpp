@@ -69,6 +69,7 @@ void UsartMock::write( const uint8_t data )
 
 void UsartMock::clearTxComplete()
 {
+    mock().actualCall( "clearTxComplete" ).onObject( this );
 }
 
 /*

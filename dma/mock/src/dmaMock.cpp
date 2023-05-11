@@ -44,12 +44,12 @@ void DmaMock::setPeripheralAddress( void* pvAddress )
 
 void DmaMock::setMemory0Address( void* pvAddress )
 {
-  //  reinterpret_cast<void*>( pvAddress );
+    mock().actualCall( "setMemory0Address" ).onObject( this ).withPointerParameter( "pvAddress", pvAddress );
 }
 
 void DmaMock::setNumberOfData( uint16_t ui16NumberOfData )
 {
-  //  reinterpret_cast<void*>( ui16NumberOfData );
+    mock().actualCall( "setNumberOfData" ).onObject( this ).withParameterOfType( "uint16_t", "ui16NumberOfData", &ui16NumberOfData );
 }
 
 void DmaMock::setDirectionMemoryToPeripheral()
@@ -78,4 +78,5 @@ uint32_t DmaMock::getNumberOfData()
 
 void DmaMock::enable()
 {
+    mock().actualCall( "enable" ).onObject( this );
 }

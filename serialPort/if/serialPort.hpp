@@ -30,5 +30,6 @@ class SerialPort
 {
 public:
     virtual ~SerialPort() = 0;
+    virtual void transmit( void* buffer, uint16_t size ) =  0;
 };
 #endif /* SERIALPORT_IF_SERIALPORT_HPP_ */

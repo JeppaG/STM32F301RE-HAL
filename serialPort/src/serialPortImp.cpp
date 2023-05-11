@@ -25,7 +25,9 @@
 
 SerialPortImp::SerialPortImp( Usart* const pUsart,
 						      Dma*	 const pTxDma,
-						      Dma*	 const pRxDma )
+						      Dma*	 const pRxDma ) :
+  usart( pUsart ),
+  txDma( pTxDma )
 {
     const void* usartBaseAddress = pUsart->getBaseAddress();
     pTxDma->setPeripheralAddress( const_cast<void*>( usartBaseAddress ) + 4 );
@@ -37,6 +39,14 @@ SerialPortImp::SerialPortImp( Usart* const pUsart,
     pUsart->enableDmaTx();
     pUsart->enableDmaRx();
     pUsart->enable();
+}
+
+void SerialPortImp::transmit( void* buffer, uint16_t size )
+{
+    txDma->setMemory0Address( buffer );
+    txDma->setNumberOfData( size );
+    usart->clearTxComplete();
+    txDma->enable();
 }
 
 SerialPortImp::~SerialPortImp()

@@ -25,11 +25,26 @@
 
 #include "../../dma/mock/inc/dmaMock.hpp"
 #include "CppUTest/TestHarness.h"
+#include "CppUTest/TestRegistry.h"
 #include "CppUTestExt/MockSupport.h"
+#include "CppUTestExt/MockSupportPlugin.h"
 #include "CppUTest/CommandLineTestRunner.h"
 #include "serialPortImp.hpp"
 #include "usartMock.hpp"
 #include "dmaMock.hpp"
+
+class Uint16Comparator : public MockNamedValueComparator
+{
+public:
+    virtual bool isEqual(const void* object1, const void* object2)
+    {
+        return *static_cast<const uint16_t*>( object1 ) == *static_cast<const uint16_t*>( object2 );
+    }
+    virtual SimpleString valueToString(const void* object)
+    {
+        return StringFrom( *static_cast<const uint16_t*>( object) );
+    }
+};
 
 TEST_GROUP( SerialPort  )
 {
@@ -44,7 +59,7 @@ TEST_GROUP( SerialPort  )
 
 	void setup()
 	{
-		usartMock = new UsartMock;
+	    usartMock = new UsartMock;
 		txDmaMock = new DmaMock;
 		rxDmaMock = new DmaMock;
 		usart     = static_cast <Usart*>( usartMock );
@@ -63,6 +78,17 @@ TEST_GROUP( SerialPort  )
 		usart = nullptr;
 		rxDma = nullptr;
 		txDma = nullptr;
+		mock().removeAllComparatorsAndCopiers();
+	}
+
+	SerialPort* pInstantiateSerialPort()
+	{
+	    mock().disable();
+	    SerialPort* pSerialPort = static_cast<SerialPort*>( new SerialPortImp( /* Usart */ usart,
+                                                                               /* txDma */ txDma,
+                                                                               /* rxDma */ rxDma ) );
+        mock().enable();
+	    return pSerialPort;
 	}
 
 };
@@ -99,8 +125,38 @@ TEST( SerialPort, Instantiate )
 	delete serialPort;
 }
 
+/*! Check that when a tx buffer is handed to an instantiated serial port:
+ *  - The address of the first object in the buffer is handed to the txDma object using the
+ *    setMemory0Address method.
+ *  - The number of data is written to the txDma object using the setNumberOfData method.
+ *  - The clearTxComplete method of the usart is called
+ *  - The enable method of the txDma object is called
+ */
+TEST( SerialPort, TransmitBuffer )
+{
+
+    const char* helloStr = "Hello World";
+    void* hello = const_cast<void*>( static_cast<const void*>( helloStr ) );
+    uint16_t size = 11;
+
+    serialPort = pInstantiateSerialPort();
+
+    mock().expectOneCall( "setMemory0Address" ).onObject( txDma ).withPointerParameter( "pvAddress", hello );
+    mock().expectOneCall( "setNumberOfData" ).onObject( txDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "clearTxComplete" ).onObject( usart );
+    mock().expectOneCall( "enable" ).onObject( txDma );
+
+    serialPort->transmit( hello, 11 );
+
+    delete serialPort;
+}
 
 int main( int ac, char** av )
 {
-	return CommandLineTestRunner::RunAllTests( ac, av );
+    Uint16Comparator uint16Comparator;
+    MockSupportPlugin mockPlugin;
+
+    mockPlugin.installComparator("uint16_t", uint16Comparator);
+    TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);
+    return CommandLineTestRunner::RunAllTests( ac, av );
 }
