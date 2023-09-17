@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 JG Mechatronics AB
+ * Copyright 2023 JG Mechatronics AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *
  *****************************************************************************
  *
- *  usartTest.cpp
+ *  serialTest.cpp
  *
  *  Created on: 04-Mar 2023 latest modified: 04 mar 2023
  *      Author: Jeppa
