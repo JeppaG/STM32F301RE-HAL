@@ -251,6 +251,36 @@ TEST ( Usart, EnableDmaReceive )
     delete usart;
 }
 
+/*! Check that when DMA Transmit followed by DMA Receive is enabled on the USART
+ *  bit DMAT and DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaTransmitAndReceive )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x000000C0;
+    usart->enableDmaTx();
+    usart->enableDmaRx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when DMA Receive followed by DMA Transmit is enabled on the USART
+ *  bit DMAT and DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaReceiveAndTransmit )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x000000C0;
+    usart->enableDmaRx();
+    usart->enableDmaTx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
 /*! Check that when a manual Transmission Complete is issued the TC bit in the SR register is cleared */
 TEST ( Usart, ClearTxComplete )
 {

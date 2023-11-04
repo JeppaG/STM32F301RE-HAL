@@ -50,12 +50,12 @@ void Usart1_2Imp::setBaudRate( uint32_t baudRate )
 
 void Usart1_2Imp::enableDmaTx()
 {
-    usart->control3 = 0x00000080;
+    usart->control3 |= 0x00000080;
 }
 
 void Usart1_2Imp::enableDmaRx()
 {
-    usart->control3 = 0x00000040;
+    usart->control3 |= 0x00000040;
 }
 
 void Usart1_2Imp::enable()

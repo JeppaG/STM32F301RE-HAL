@@ -30,6 +30,7 @@
 #include "exceptionImp.hpp"
 #include "usartImp.hpp"
 #include "dmaImp.hpp"
+#include "serialPortImp.hpp"
 
 void* const scbBaseAddress = reinterpret_cast<void*>( 0xE000ED00 );
 void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
@@ -109,6 +110,17 @@ DmaImp dmaUsart1TxImp( /* dmaBaseAddress */ dma2BaseAddress,
                        /* ui8Channel     */ 4 );
 Dma* dmaUsart1Tx = static_cast<Dma*>( &dmaUsart1TxImp );
 
+DmaImp dmaUsart1RxImp ( /* dmaBaseAddress */ dma2BaseAddress,
+                        /* peripheralRcc  */ dma2Rcc,
+                        /* ui8Stream      */ 5,
+                        /* ui8Channel     */ 4 );
+Dma* dmaUsart1Rx = static_cast<Dma*>( &dmaUsart1RxImp );
+
+SerialPortImp serial1Imp ( /* usart */ usart1,
+                           /* txDma */ dmaUsart1Tx,
+                           /* rxDma */ dmaUsart1Rx );
+SerialPort* serial1 = static_cast<SerialPort*>( &serial1Imp );
+
 DmaImp dmaUsart2TxImp( /* dmaBaseAddress */ dma1BaseAddress,
                        /* peripheralRcc  */ dma1Rcc,
                        /* ui8Stream      */ 6,
@@ -125,15 +137,10 @@ void Main::main()
 	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
-    dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
-    dmaUsart1Tx->setDirectionMemoryToPeripheral();
-    dmaUsart1Tx->setMemoryIncrementalMode();
 	dmaUsart2Tx->setPeripheralAddress( usart2BaseAddress + 4 );
 	dmaUsart2Tx->setDirectionMemoryToPeripheral();
 	dmaUsart2Tx->setMemoryIncrementalMode();
-	usart1->enableDmaTx();
 	usart2->enableDmaTx();
-	usart1->enable();
 	usart2->enable();
 	Exception::enableGlobal();
 
@@ -161,10 +168,7 @@ void SysTick::handler()
             dmaUsart2Tx->setNumberOfData( 13 );
             usart2->clearTxComplete();
             dmaUsart2Tx->enable();
-            dmaUsart1Tx->setMemory0Address( goodbye );
-            dmaUsart1Tx->setNumberOfData( 15 );
-            usart1->clearTxComplete();
-            dmaUsart1Tx->enable();
+            serial1->transmit( goodbye, 15 );
         }
         else
         {
@@ -173,10 +177,7 @@ void SysTick::handler()
             dmaUsart2Tx->setNumberOfData( 15 );
             usart2->clearTxComplete();
             dmaUsart2Tx->enable();
-            dmaUsart1Tx->setMemory0Address( hello );
-            dmaUsart1Tx->setNumberOfData( 13 );
-            usart1->clearTxComplete();
-            dmaUsart1Tx->enable();
+            serial1->transmit( hello, 13 );
         }
         ledIsOn = !ledIsOn;
         count = 1000;
