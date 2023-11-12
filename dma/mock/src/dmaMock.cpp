@@ -24,7 +24,8 @@
 #include "../inc/dmaMock.hpp"
 #include "CppUTestExt/MockSupport.h"
 
-DmaMock::DmaMock()
+DmaMock::DmaMock() :
+    returnNumberOfData ( 0 )
 {
 }
 
@@ -71,12 +72,28 @@ void DmaMock::setCircularMode()
 {
 }
 
-uint32_t DmaMock::getNumberOfData()
+uint16_t DmaMock::getNumberOfData()
 {
-    return 0;
+    mock().actualCall( "getNumberOfData" ).onObject( this );
+    return returnNumberOfData;
 }
 
 void DmaMock::enable()
 {
     mock().actualCall( "enable" ).onObject( this );
 }
+
+void DmaMock::disable()
+{
+    mock().actualCall( "disable" ).onObject( this );
+}
+
+/*************************************************************
+ * Test case helper functions
+ ************************************************************/
+void DmaMock::expectGetNumberOfData ( uint32_t numberOfData )
+{
+    mock().expectOneCall( "getNumberOfData" ).onObject( static_cast<void*>( this ) );
+    returnNumberOfData = numberOfData;
+}
+

@@ -76,9 +76,9 @@ void DmaImp::setCircularMode()
     streamReg->configuration |= 0x00000100;
 }
 
-uint32_t DmaImp::getNumberOfData()
+uint16_t DmaImp::getNumberOfData()
 {
-    return streamReg->numberOfData;
+    return static_cast<uint16_t>( streamReg->numberOfData );
 }
 
 void DmaImp::enable()
@@ -98,6 +98,11 @@ void DmaImp::enable()
         interruptReg->highInterruptFlagClear = 0x0F400000;
         streamReg->configuration |= 0x00000001;
     }
+}
+
+void DmaImp::disable()
+{
+    streamReg->configuration &= 0xFFFFFFFE;
 }
 
 DmaImp::~DmaImp()

@@ -151,6 +151,128 @@ TEST( SerialPort, TransmitBuffer )
     delete serialPort;
 }
 
+/*! Check that when an Rx buffer is handed to a newly instantiated serial port:
+ *  - The rxDma buffer is disabled
+ *  - The DMA buffer is polled for the number of data remaining - 0 is returned
+ *  - The address of the first object in the buffer is handed to the rxDma object using the
+ *    setMemory0Address method.
+ *  - The rxBuffer size is written to the rxDma object using the setNumberOfData method.
+ *  - The enable method of the rxDma object is called
+ *  - zero is returned
+ */
+TEST( SerialPort, ReceiveFirstBuffer )
+{
+
+    const char* rxStr = "\0\0\0\0\0\0";
+    void* rxBuffer = const_cast<void*>( static_cast<const void*>( rxStr ) );
+    uint16_t size = 6;
+    uint16_t numberOfRxData = 0;
+
+    serialPort = pInstantiateSerialPort();
+
+    mock().expectOneCall( "disable" ).onObject( rxDma );
+    rxDmaMock->expectGetNumberOfData( 0 );
+    mock().expectOneCall( "setMemory0Address" ).onObject( rxDma ).withPointerParameter( "pvAddress", rxBuffer );
+    mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "enable" ).onObject( rxDma );
+
+    CHECK_EQUAL( serialPort->receive( rxBuffer, size ), 0 );
+
+    delete serialPort;
+}
+
+/*! Check that when a second Rx buffer is handed to a newly instantiated serial port
+ *  when no bytes have been written to the first buffer:
+ *  - The rxDma buffer is disabled
+ *  - The DMA buffer is polled for the number of data remaining - The same number as was written to the
+ *    rxDma when the first buffer was handed to it is returned.
+ *  - The address of the first object in the buffer is handed to the rxDma object using the
+ *    setMemory0Address method.
+ *  - The rxBuffer size is written to the rxDma object using the setNumberOfData method.
+ *  - The enable method of the rxDma object is called
+ *  - zero is returned
+ */
+TEST( SerialPort, ReceiveSecondBufferNoBytesRead )
+{
+
+    const char* rxStr1 = "\0\0\0\0\0\0";
+    const char* rxStr2 = "\0\0\0\0\0\0";
+    void* rxBuffer1 = const_cast<void*>( static_cast<const void*>( rxStr1 ) );
+    void* rxBuffer2 = const_cast<void*>( static_cast<const void*>( rxStr2 ) );
+    uint16_t size = 6;
+    uint16_t numberOfRxData1 = 0;
+    uint16_t numberOfRxData2 = size; // means that no data was read to the buffer
+
+    serialPort = pInstantiateSerialPort();
+
+    /* Hand the first buffer to the rxDma Object */
+    mock().expectOneCall( "disable" ).onObject( rxDma );
+    rxDmaMock->expectGetNumberOfData( numberOfRxData1 );
+    mock().expectOneCall( "setMemory0Address" ).onObject( rxDma ).withPointerParameter( "pvAddress", rxBuffer1 );
+    mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "enable" ).onObject( rxDma );
+
+    CHECK_EQUAL( serialPort->receive( rxBuffer1, size ), 0 );
+
+    /* Hand a second buffer to the rxDma object - No data has been read into the first buffer */
+    mock().expectOneCall( "disable" ).onObject( rxDma );
+    rxDmaMock->expectGetNumberOfData( numberOfRxData2 );
+    mock().expectOneCall( "setMemory0Address" ).onObject( rxDma ).withPointerParameter( "pvAddress", rxBuffer2 );
+    mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "enable" ).onObject( rxDma );
+
+    CHECK_EQUAL( serialPort->receive( rxBuffer2, size ), 0 );
+
+    delete serialPort;
+}
+
+/*! Check that when a second Rx buffer is handed to a newly instantiated serial port
+ *  when spome bytes have been written to the first buffer:
+ *  - The rxDma buffer is disabled
+ *  - The DMA buffer is polled for the number of data remaining - A smaller number than the number written
+ *    to the rxDma when the first buffer was handed to it is returned.
+ *  - The address of the first object in the buffer is handed to the rxDma object using the
+ *    setMemory0Address method.
+ *  - The rxBuffer size is written to the rxDma object using the setNumberOfData method.
+ *  - The enable method of the rxDma object is called
+ *  - The difference between  the buffer size and the remaining number of data in rxBuffer1,
+ *    i.e the number of received data since the first buffer was initiated is returned
+ */
+TEST( SerialPort, ReceiveSecondBufferSomeBytesRead )
+{
+
+    const char* rxStr1 = "\0\0\0\0\0\0";
+    const char* rxStr2 = "\0\0\0\0\0\0";
+    void* rxBuffer1 = const_cast<void*>( static_cast<const void*>( rxStr1 ) );
+    void* rxBuffer2 = const_cast<void*>( static_cast<const void*>( rxStr2 ) );
+    uint16_t size = 6;
+    uint16_t numberOfRxData1 = 0;
+    uint16_t numberOfReadBytes = 2;
+    uint16_t numberOfRxData2 = size - numberOfReadBytes; // means that 3 bytes were read to the buffer
+
+    serialPort = pInstantiateSerialPort();
+
+    /* Hand the first buffer to the rxDma Object */
+    mock().expectOneCall( "disable" ).onObject( rxDma );
+    rxDmaMock->expectGetNumberOfData( numberOfRxData1 );
+    mock().expectOneCall( "setMemory0Address" ).onObject( rxDma ).withPointerParameter( "pvAddress", rxBuffer1 );
+    mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "enable" ).onObject( rxDma );
+
+    CHECK_EQUAL( serialPort->receive( rxBuffer1, size ), 0 );
+
+    /* Hand a second buffer to the rxDma object - Some bytes have been read into the first buffer */
+    mock().expectOneCall( "disable" ).onObject( rxDma );
+    rxDmaMock->expectGetNumberOfData( numberOfRxData2 );
+    mock().expectOneCall( "setMemory0Address" ).onObject( rxDma ).withPointerParameter( "pvAddress", rxBuffer2 );
+    mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
+    mock().expectOneCall( "enable" ).onObject( rxDma );
+
+    CHECK_EQUAL( serialPort->receive( rxBuffer2, size ), numberOfReadBytes );
+
+    delete serialPort;
+}
+
 int main( int ac, char** av )
 {
     Uint16Comparator uint16Comparator;

@@ -46,12 +46,15 @@ public:
     void setDirectionPeripheralToMemory () override;
     void setMemoryIncrementalMode() override;
     void setCircularMode() override;
-    uint32_t getNumberOfData() override;
+    uint16_t getNumberOfData() override;
     void enable() override;
+    void disable() override;
 
 	/* Test case helper functions */
+    void expectGetNumberOfData ( uint32_t numberOfData );
 
 private:
+    uint16_t returnNumberOfData;
 
 };
 

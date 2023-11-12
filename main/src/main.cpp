@@ -152,8 +152,8 @@ void Main::main()
 
 void SysTick::handler()
 {
-    const char* helloStr = "Hello World\r\n";
-    const char* goodbyeStr = "Goodbye World\r\n";
+    const char* helloStr = "Hello World\n";
+    const char* goodbyeStr = "Goodbye World\n";
     static void* hello = static_cast<void*>( const_cast<char*>( helloStr ) );
     static void* goodbye = static_cast<void*>( const_cast<char*>( goodbyeStr ) );
     static uint16_t count = 1000;
@@ -165,19 +165,19 @@ void SysTick::handler()
         {
             greenLed->clear();
             dmaUsart2Tx->setMemory0Address( hello );
-            dmaUsart2Tx->setNumberOfData( 13 );
+            dmaUsart2Tx->setNumberOfData( 12 );
             usart2->clearTxComplete();
             dmaUsart2Tx->enable();
-            serial1->transmit( goodbye, 15 );
+            serial1->transmit( goodbye, 14 );
         }
         else
         {
             greenLed->set();
             dmaUsart2Tx->setMemory0Address( goodbye );
-            dmaUsart2Tx->setNumberOfData( 15 );
+            dmaUsart2Tx->setNumberOfData( 14 );
             usart2->clearTxComplete();
             dmaUsart2Tx->enable();
-            serial1->transmit( hello, 13 );
+            serial1->transmit( hello, 12 );
         }
         ledIsOn = !ledIsOn;
         count = 1000;

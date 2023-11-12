@@ -40,12 +40,15 @@ public:
                    Dma*   rxDma );
 
     void transmit( void* buffer, uint16_t size ) override;
+    uint16_t receive( void* buffer, uint16_t size ) override;
 
     ~SerialPortImp();
 
 private:
-    Usart* const usart;
-    Dma*   const txDma;
+    Usart*   const usart;
+    Dma*     const txDma;
+    Dma*     const rxDma;
+    uint16_t rxBufferSize;
 };
 
 
