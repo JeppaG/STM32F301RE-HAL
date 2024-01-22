@@ -63,7 +63,7 @@ void DmaImp::setDirectionMemoryToPeripheral()
 
 void DmaImp::setDirectionPeripheralToMemory()
 {
-    streamReg->configuration &=0xFFFFFF3F;
+    streamReg->configuration &=0xFFFFFFF3F;
 }
 
 void DmaImp::setMemoryIncrementalMode()

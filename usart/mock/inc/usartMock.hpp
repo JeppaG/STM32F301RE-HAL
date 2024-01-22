@@ -46,6 +46,8 @@ public:
     void enable() override;
     void write( const uint8_t data ) override;
     void clearTxComplete() override;
+    bool newRxData() override;
+    uint8_t read() override;
 
 private:
 

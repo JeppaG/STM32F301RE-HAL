@@ -72,6 +72,15 @@ void UsartMock::clearTxComplete()
     mock().actualCall( "clearTxComplete" ).onObject( this );
 }
 
+bool UsartMock::newRxData()
+{
+    return mock().actualCall( "newRxData" ).onObject( this ).returnBoolValue();
+}
+
+uint8_t UsartMock::read()
+{
+    return static_cast<uint8_t>( mock().actualCall( "read" ).onObject( this ).returnIntValue() );
+}
 /*
  * Test case helper functions
  */

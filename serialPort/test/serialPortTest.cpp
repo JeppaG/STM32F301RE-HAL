@@ -176,7 +176,7 @@ TEST( SerialPort, ReceiveFirstBuffer )
     mock().expectOneCall( "setNumberOfData" ).onObject( rxDma ).withParameterOfType( "uint16_t", "ui16NumberOfData", &size );
     mock().expectOneCall( "enable" ).onObject( rxDma );
 
-    CHECK_EQUAL( serialPort->receive( rxBuffer, size ), 0 );
+    CHECK_EQUAL( serialPort->receive( rxBuffer, size ), numberOfRxData );
 
     delete serialPort;
 }

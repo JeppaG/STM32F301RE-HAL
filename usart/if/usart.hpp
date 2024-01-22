@@ -35,7 +35,9 @@ public:
     virtual void enableDmaRx() = 0;
     virtual void enable() = 0;
     virtual void write( const uint8_t data ) = 0;
+    virtual uint8_t read() = 0;
     virtual void clearTxComplete() = 0;
+    virtual bool newRxData() = 0;
 	virtual ~Usart() = 0;
 };
 #endif /* USART_IF_USART_HPP_ */

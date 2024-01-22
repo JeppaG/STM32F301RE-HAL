@@ -68,9 +68,19 @@ void Usart1_2Imp::write( const uint8_t data )
     usart->data = data;
 }
 
+uint8_t Usart1_2Imp::read()
+{
+    return static_cast<uint8_t>( usart->data );
+}
+
 void Usart1_2Imp::clearTxComplete()
 {
     usart->status = 0x00C00000;
+}
+
+bool Usart1_2Imp::newRxData()
+{
+    return ( 0x00000020 == ( usart->status & 0x00000020 ) );
 }
 
 Usart1_2Imp::~Usart1_2Imp()

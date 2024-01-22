@@ -225,6 +225,19 @@ TEST ( Usart, WriteChar )
     delete usart;
 }
 
+/*! Check that the data register is copied to the return value of the read method
+ *  when it is called */
+TEST ( Usart, ReadChar )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.data = 0x000000AB;
+
+    CHECK_EQUAL( 0xAB, usart->read() );
+
+    delete usart;
+}
+
 /*! Check that when DMA Transmit is enabled on the USART bit DMAT is set in the CR3 register */
 TEST ( Usart, EnableDmaTransmit )
 {
@@ -286,10 +299,38 @@ TEST ( Usart, ClearTxComplete )
 {
     usart = pInstantiateUsart1_2();
 
-    actualRegister.status = 0x00C00400;
+    actualRegister.status = 0x00C00040;
     usart->clearTxComplete();
 
     vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when the the RXNE bit of the USART Status register is
+ *  set the newRxData function returns true */
+TEST ( Usart, returnNewRxDataTrue )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.status = 0x00C00020;
+    CHECK_EQUAL( true, usart->newRxData() );
+
+
+
+    delete usart;
+}
+
+/*! Check that when the the RXNE bit of the USART Status register is
+ *  cleared the newRxData function returns false */
+TEST ( Usart, returnNewRxDataFalse )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.status = 0x00C00000;
+    CHECK_EQUAL( false, usart->newRxData() );
+
+
 
     delete usart;
 }

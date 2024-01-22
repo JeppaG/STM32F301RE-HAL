@@ -56,7 +56,9 @@ public:
     virtual void enableDmaRx() override;
     virtual void enable() override;
     virtual void clearTxComplete() override;
+    virtual bool newRxData() override;
     virtual void write( const uint8_t data ) override;
+    virtual uint8_t read() override;
 
 	~Usart1_2Imp();
 
