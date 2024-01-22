@@ -700,6 +700,23 @@ TEST( Dma, EnableStream7 )
     delete dma;
 }
 
+/*! Check that when dma stream 5 is disabled:
+ *  - Check that the enable bit in the configuration register for stream 5 is cleared
+ */
+TEST( Dma, DisableStream5 )
+{
+    dma = pInstantiateDma( /* ui8Stream */ 5,
+                           /* ui8Channel */ 4 );
+
+    setBit ( actualRegister.stream5Configuration, 0 );
+
+    dma->disable ();
+
+    vCheckRegisters();
+
+    delete dma;
+}
+
 int main( int ac, char** av )
 {
 	return CommandLineTestRunner::RunAllTests( ac, av );

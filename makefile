@@ -48,6 +48,7 @@ include timer/make.mk
 include assert/make.mk
 include usart/make.mk
 include dma/make.mk
+include serialPort/make.mk
 
 $(BUILD_PATH)/main.elf : $(addprefix $(OBJ_PATH)/, $(OBJ))
 	$(LD) $(LD_FLAGS) $^ -o$@

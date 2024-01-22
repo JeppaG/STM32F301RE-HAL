@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 JG Mechatronics AB
+ * Copyright 2023 JG Mechatronics AB
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,29 +15,22 @@
  *
  *****************************************************************************
  *
- * clockGenerator.hpp
+ * serialPort.hpp
  *
- * Application interface of the usart
+ * Application interface of the serialPort
  *
- *  Created on: 23 Dec 2020
+ *  Created on: 04 Mar 2023
  *      Author: jeppa
  */
 
-#ifndef USART_IF_USART_HPP_
-#define USART_IF_USART_HPP_
+#ifndef SERIALPORT_IF_SERIALPORT_HPP_
+#define SERIALPORT_IF_SERIALPORT_HPP_
 
-class Usart
+class SerialPort
 {
 public:
-    virtual const void* getBaseAddress() = 0;
-    virtual void setBaudRate( uint32_t baudRate ) = 0;
-    virtual void enableDmaTx() = 0;
-    virtual void enableDmaRx() = 0;
-    virtual void enable() = 0;
-    virtual void write( const uint8_t data ) = 0;
-    virtual uint8_t read() = 0;
-    virtual void clearTxComplete() = 0;
-    virtual bool newRxData() = 0;
-	virtual ~Usart() = 0;
+    virtual ~SerialPort() = 0;
+    virtual void transmit( void* buffer, uint16_t size ) =  0;
+    virtual uint16_t receive( void* buffer, uint16_t size ) = 0;
 };
-#endif /* USART_IF_USART_HPP_ */
+#endif /* SERIALPORT_IF_SERIALPORT_HPP_ */

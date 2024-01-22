@@ -46,8 +46,10 @@ public:
     void setDirectionPeripheralToMemory() override;
     void setMemoryIncrementalMode() override;
     void setCircularMode() override;
-    uint32_t getNumberOfData() override;
+    uint16_t getNumberOfData() override;
     void enable() override;
+    void disable() override;
+
 
 	~DmaImp();
 

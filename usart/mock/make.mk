@@ -15,32 +15,18 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+local_dir := $(PROJ_ROOT)/usart
 
-local_used_if := \
-  startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
-  usart \
-  dma \
-  serialPort \
-
-local_used_imp := \
-  $(local_used_if) \
-  
 local_src := \
-  main.cpp \
+  usartMock.cpp \
 
-main_source_path := $(local_dir)/src
+usart_mock_source_path := $(local_dir)/mock/src
 
-main_include_path := \
-  -I $(local_dir)/if \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
-  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
+INCLUDE_PATH += -I $(local_dir)/if
+INCLUDE_PATH += -I $(local_dir)/mock/inc 
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
-	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
+$(OBJ_PATH)/%.o : $(usart_mock_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(INCLUDE_PATH) $< -o$@ 
       		 
 OBJ += $(local_src:.cpp=.o)
+

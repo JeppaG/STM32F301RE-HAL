@@ -23,6 +23,8 @@
 #include "sysTick.hpp"
 
 #include <cstdint>
+#include <cstring>
+
 
 #include "clockGeneratorImp.hpp"
 #include "sysTickTimerImp.hpp"
@@ -30,6 +32,7 @@
 #include "exceptionImp.hpp"
 #include "usartImp.hpp"
 #include "dmaImp.hpp"
+#include "serialPortImp.hpp"
 
 void* const scbBaseAddress = reinterpret_cast<void*>( 0xE000ED00 );
 void* const rccBaseAddress = reinterpret_cast<void*>( 0x40023800 );
@@ -109,32 +112,45 @@ DmaImp dmaUsart1TxImp( /* dmaBaseAddress */ dma2BaseAddress,
                        /* ui8Channel     */ 4 );
 Dma* dmaUsart1Tx = static_cast<Dma*>( &dmaUsart1TxImp );
 
+DmaImp dmaUsart1RxImp ( /* dmaBaseAddress */ dma2BaseAddress,
+                        /* peripheralRcc  */ dma2Rcc,
+                        /* ui8Stream      */ 5,
+                        /* ui8Channel     */ 4 );
+Dma* dmaUsart1Rx = static_cast<Dma*>( &dmaUsart1RxImp );
+
+SerialPortImp serial1Imp ( /* usart */ usart1,
+                           /* txDma */ dmaUsart1Tx,
+                           /* rxDma */ dmaUsart1Rx );
+SerialPort* serial1 = static_cast<SerialPort*>( &serial1Imp );
+
 DmaImp dmaUsart2TxImp( /* dmaBaseAddress */ dma1BaseAddress,
                        /* peripheralRcc  */ dma1Rcc,
                        /* ui8Stream      */ 6,
                        /* ui8Channel     */ 4 );
 Dma* dmaUsart2Tx = static_cast<Dma*>( &dmaUsart2TxImp );
 
+DmaImp dmaUsart2RxImp ( /* dmaBaseAddress */ dma1BaseAddress,
+                        /* peripheralRcc  */ dma1Rcc,
+                        /* ui8Stream      */ 5,
+                        /* ui8Channel     */ 4 );
+Dma* dmaUsart2Rx = static_cast<Dma*>( &dmaUsart2RxImp );
+
+SerialPortImp serial2Imp ( /* usart */ usart2,
+                           /* txDma */ dmaUsart2Tx,
+                           /* rxDma */ dmaUsart2Rx );
+SerialPort* serial2 = static_cast<SerialPort*>( &serial2Imp );
+
 void Main::main()
 {
 	static uint16_t a = 15;
 	static uint16_t b = 40;
+    static uint8_t lastChar = 0xAC;
 
 	uint16_t c = a + b;
 
 	greenLed->setToDigitalOutput();
 	sysTickException->setPriority( 255U );
 	sysTickException->enable();
-    dmaUsart1Tx->setPeripheralAddress( usart1BaseAddress + 4 );
-    dmaUsart1Tx->setDirectionMemoryToPeripheral();
-    dmaUsart1Tx->setMemoryIncrementalMode();
-	dmaUsart2Tx->setPeripheralAddress( usart2BaseAddress + 4 );
-	dmaUsart2Tx->setDirectionMemoryToPeripheral();
-	dmaUsart2Tx->setMemoryIncrementalMode();
-	usart1->enableDmaTx();
-	usart2->enableDmaTx();
-	usart1->enable();
-	usart2->enable();
 	Exception::enableGlobal();
 
     while ( true )
@@ -145,38 +161,57 @@ void Main::main()
 
 void SysTick::handler()
 {
-    const char* helloStr = "Hello World\r\n";
-    const char* goodbyeStr = "Goodbye World\r\n";
+    const char* helloStr = "Hello World\n";
+    const char* goodbyeStr = "Goodbye World\n";
     static void* hello = static_cast<void*>( const_cast<char*>( helloStr ) );
     static void* goodbye = static_cast<void*>( const_cast<char*>( goodbyeStr ) );
     static uint16_t count = 1000;
     static bool ledIsOn = false;
+    static uint8_t bufStr1[12] = { 0 };
+    static uint8_t bufStr2[12] = { 0 };
+    static uint8_t command[12] = { 0 };
+    static void* rdBuffer1 = static_cast<void*>( bufStr1 );
+    static uint8_t* commandPtr = command;
+    static void* rdBuffer2 = static_cast<void*>( bufStr2 );
+    static uint16_t rdBufferSize = 12;
+    static bool rd1 = false;
+    uint16_t rdSize;
+    static uint16_t cmdSize = 0;
 
-    if ( 0 == count )
+    if ( false == rd1 )
     {
-        if ( ledIsOn )
+        rd1 = true;
+        rdSize = serial2->receive( rdBuffer1, rdBufferSize );
+        memcpy( commandPtr, rdBuffer2, rdSize );
+    }
+    else
+    {
+        rd1 = false;
+        rdSize = serial2->receive( rdBuffer2, rdBufferSize );
+        memcpy( commandPtr, rdBuffer1, rdSize );
+    }
+    if ( rdSize > 0 ) {
+    commandPtr += rdSize;
+    cmdSize += rdSize;
+    }
+    if ( ( commandPtr > command ) && ( '\r' == *( commandPtr - 1 ) ) )
+    {
+        serial1->transmit( command, cmdSize );
+        cmdSize = 0;
+        commandPtr = command;
+    }
+
+    if( 0 == count )
+    {
+       if ( ledIsOn )
         {
             greenLed->clear();
-            dmaUsart2Tx->setMemory0Address( hello );
-            dmaUsart2Tx->setNumberOfData( 13 );
-            usart2->clearTxComplete();
-            dmaUsart2Tx->enable();
-            dmaUsart1Tx->setMemory0Address( goodbye );
-            dmaUsart1Tx->setNumberOfData( 15 );
-            usart1->clearTxComplete();
-            dmaUsart1Tx->enable();
+            serial2->transmit( hello, 12 );
         }
         else
         {
             greenLed->set();
-            dmaUsart2Tx->setMemory0Address( goodbye );
-            dmaUsart2Tx->setNumberOfData( 15 );
-            usart2->clearTxComplete();
-            dmaUsart2Tx->enable();
-            dmaUsart1Tx->setMemory0Address( hello );
-            dmaUsart1Tx->setNumberOfData( 13 );
-            usart1->clearTxComplete();
-            dmaUsart1Tx->enable();
+            serial2->transmit( goodbye, 14 );
         }
         ledIsOn = !ledIsOn;
         count = 1000;

@@ -166,6 +166,17 @@ TEST( Usart, InstantiateUsart1_2 )
 	delete usart;
 }
 
+/*! Check that when the usart base address is requested, the base address that
+ *  was assigned during instantiation is returned */
+TEST( Usart, GetBaseAddress )
+{
+    usart = pInstantiateUsart1_2();
+
+    CHECK_EQUAL( &actualRegister, usart->getBaseAddress() );
+
+    delete usart;
+}
+
 /*! Check that when the correct data is written to the baudrate register
  *  of Usart1_2 when the baudrate is set to 115200
  *  with 16000000 MHz clock and 16 times oversampling */
@@ -214,6 +225,19 @@ TEST ( Usart, WriteChar )
     delete usart;
 }
 
+/*! Check that the data register is copied to the return value of the read method
+ *  when it is called */
+TEST ( Usart, ReadChar )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.data = 0x000000AB;
+
+    CHECK_EQUAL( 0xAB, usart->read() );
+
+    delete usart;
+}
+
 /*! Check that when DMA Transmit is enabled on the USART bit DMAT is set in the CR3 register */
 TEST ( Usart, EnableDmaTransmit )
 {
@@ -227,15 +251,86 @@ TEST ( Usart, EnableDmaTransmit )
     delete usart;
 }
 
+/*! Check that when DMA Receive is enabled on the USART bit DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaReceive )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x00000040;
+    usart->enableDmaRx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when DMA Transmit followed by DMA Receive is enabled on the USART
+ *  bit DMAT and DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaTransmitAndReceive )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x000000C0;
+    usart->enableDmaTx();
+    usart->enableDmaRx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when DMA Receive followed by DMA Transmit is enabled on the USART
+ *  bit DMAT and DMAR is set in the CR3 register */
+TEST ( Usart, EnableDmaReceiveAndTransmit )
+{
+    usart = pInstantiateUsart1_2();
+
+    expectedRegister.control3 = 0x000000C0;
+    usart->enableDmaRx();
+    usart->enableDmaTx();
+
+    vCheckRegisters();
+
+    delete usart;
+}
+
 /*! Check that when a manual Transmission Complete is issued the TC bit in the SR register is cleared */
 TEST ( Usart, ClearTxComplete )
 {
     usart = pInstantiateUsart1_2();
 
-    actualRegister.status = 0x00C00400;
+    actualRegister.status = 0x00C00040;
     usart->clearTxComplete();
 
     vCheckRegisters();
+
+    delete usart;
+}
+
+/*! Check that when the the RXNE bit of the USART Status register is
+ *  set the newRxData function returns true */
+TEST ( Usart, returnNewRxDataTrue )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.status = 0x00C00020;
+    CHECK_EQUAL( true, usart->newRxData() );
+
+
+
+    delete usart;
+}
+
+/*! Check that when the the RXNE bit of the USART Status register is
+ *  cleared the newRxData function returns false */
+TEST ( Usart, returnNewRxDataFalse )
+{
+    usart = pInstantiateUsart1_2();
+
+    actualRegister.status = 0x00C00000;
+    CHECK_EQUAL( false, usart->newRxData() );
+
+
 
     delete usart;
 }

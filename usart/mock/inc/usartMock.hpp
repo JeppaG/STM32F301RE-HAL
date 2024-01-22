@@ -15,29 +15,42 @@
  *
  *****************************************************************************
  *
- * clockGenerator.hpp
+ * usartMock.hpp
  *
- * Application interface of the usart
+ * Mock implementation header of the usart interface
  *
- *  Created on: 23 Dec 2020
+ *  Created on: 04 Mar 2023
  *      Author: jeppa
  */
 
-#ifndef USART_IF_USART_HPP_
-#define USART_IF_USART_HPP_
+#ifndef MOCK_INC_USARTMOCK_HPP_
+#define MOCK_INC_USARTMOCK_HPP_
 
-class Usart
+#include <cstdint>
+
+#include "usart.hpp"
+
+
+class UsartMock : public Usart
 {
 public:
-    virtual const void* getBaseAddress() = 0;
-    virtual void setBaudRate( uint32_t baudRate ) = 0;
-    virtual void enableDmaTx() = 0;
-    virtual void enableDmaRx() = 0;
-    virtual void enable() = 0;
-    virtual void write( const uint8_t data ) = 0;
-    virtual uint8_t read() = 0;
-    virtual void clearTxComplete() = 0;
-    virtual bool newRxData() = 0;
-	virtual ~Usart() = 0;
+    UsartMock();
+
+	~UsartMock();
+
+	/* Mocked functions */
+	const void* getBaseAddress() override;
+    void setBaudRate( uint32_t baudRate ) override;
+    void enableDmaTx() override;
+    void enableDmaRx() override;
+    void enable() override;
+    void write( const uint8_t data ) override;
+    void clearTxComplete() override;
+    bool newRxData() override;
+    uint8_t read() override;
+
+private:
+
 };
-#endif /* USART_IF_USART_HPP_ */
+
+#endif /* MOCK_INC_USARTMOCK_HPP_ */

@@ -1,5 +1,5 @@
 #
-# Copyright 2020 JG Mechatronics AB
+# Copyright 2023 JG Mechatronics AB
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,32 +15,25 @@
 #
 #****************************************************************************
 
-local_dir := $(PROJ_ROOT)/main
+local_dir := $(PROJ_ROOT)/serialPort
 
 local_used_if := \
-  startup \
-  exception \
-  clockGenerator \
-  gpio \
-  timer \
   usart \
   dma \
-  serialPort \
 
 local_used_imp := \
-  $(local_used_if) \
   
 local_src := \
-  main.cpp \
+  serialPortImp.cpp \
 
-main_source_path := $(local_dir)/src
+serial_port_source_path := $(local_dir)/src
 
-main_include_path := \
+serial_port_include_path := \
   -I $(local_dir)/if \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
   $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
   
-$(OBJ_PATH)/%.o : $(main_source_path)/%.cpp
+$(OBJ_PATH)/%.o : $(serial_port_source_path)/%.cpp
 	$(G++) $(G++_FLAGS) $(main_include_path) $< -o$@ 
       		 
 OBJ += $(local_src:.cpp=.o)

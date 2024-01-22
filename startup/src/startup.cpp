@@ -70,7 +70,7 @@ void Startup::lowLevelInit()
 		(*p)();
 	}
 
-	/* Call the 'main()'"function defined in 'test_program.cpp'.
+	/* Call the 'main()'"function defined in 'main.cpp'.
 	 */
 	Main::main();
 }
