@@ -35,3 +35,6 @@ jobs:
     - name: Program target
       run: $OPEN_OCD_PATH/bin/openocd -f $OPENOCD_PATH/scripts/board/st_nucleo_f4.cfg -c "init; reset halt; flash write_image erase main.hex; reset run; exit"
       working-directory: ./build
+    - name: Run Robot Test
+      run: robot HalTest.rst
+      working-directory: ./robot_test
