@@ -196,7 +196,7 @@ void SysTick::handler()
     }
     if ( ( commandPtr > command ) && ( '\r' == *( commandPtr - 1 ) ) )
     {
-        serial1->transmit( command, cmdSize );
+        serial2->transmit( command, cmdSize );
         cmdSize = 0;
         commandPtr = command;
     }
@@ -206,12 +206,12 @@ void SysTick::handler()
        if ( ledIsOn )
         {
             greenLed->clear();
-            serial2->transmit( hello, 12 );
+            serial1->transmit( hello, 12 );
         }
         else
         {
             greenLed->set();
-            serial2->transmit( goodbye, 14 );
+            serial1->transmit( goodbye, 14 );
         }
         ledIsOn = !ledIsOn;
         count = 1000;
