@@ -1,5 +1,5 @@
 #
-# Copyright 2020 JG Mechatronics AB
+# Copyright 2024 JG Mechatronics AB
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,23 +15,26 @@
 #
 #****************************************************************************
 
-TOPTARGETS := all run clean
-PROJ_ROOT = ..
+local_dir := $(PROJ_ROOT)/adc
 
-UNITS := \
-    clockGenerator \
-    exception \
-    gpio \
-    timer \
-    usart \
-    dma \
-    adc \
-    serialPort \
-    
-TEST_DIRS := $(addsuffix /test, $(addprefix $(PROJ_ROOT)/, $(UNITS)))
+local_used_if := \
+  gpio \
+  clockGenerator \
 
-$(TOPTARGETS): $(TEST_DIRS)
-$(TEST_DIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
-	
-.PHONY: $(TOPTARGETS) $(TEST_DIRS)
+local_used_imp := \
+
+local_src := \
+  adcImp.cpp \
+
+adc_source_path := $(local_dir)/src
+
+adc_include_path := \
+  -I $(local_dir)/if \
+  -I $(local_dir)/imp \
+  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /if, $(local_used_if))) \
+  $(addprefix -I $(PROJ_ROOT)/, $(addsuffix /imp, $(local_used_imp))) \
+  
+$(OBJ_PATH)/%.o : $(adc_source_path)/%.cpp
+	$(G++) $(G++_FLAGS) $(adc_include_path) $< -o$@ 
+      		 
+OBJ += $(local_src:.cpp=.o)
